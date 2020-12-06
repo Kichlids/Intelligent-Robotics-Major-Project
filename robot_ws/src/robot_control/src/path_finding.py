@@ -99,15 +99,12 @@ class Astar:
         
         # Construct heristics with air travel distance
         for node_name in self.nodes:
-            if node_name == end_node_name:
-                self.heuristics[node_name] = 0
-            else:
-                x1 = self.nodes.get(node_name)[0]
-                y1 = self.nodes.get(node_name)[1]
+            x1 = self.nodes.get(node_name)[0]
+            y1 = self.nodes.get(node_name)[1]
 
-                dist = ((x1 - x0) ** 2 + (y1 - y0) ** 2) ** 0.5
+            dist = ((x1 - x0) ** 2 + (y1 - y0) ** 2) ** 0.5
 
-                self.heuristics[node_name] = dist
+            self.heuristics[node_name] = dist
                 
                 
 
