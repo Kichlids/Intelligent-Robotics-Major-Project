@@ -1,6 +1,5 @@
 #! /usr/bin/env python
 import rospy
-import re
 
 #from robot_msgs.msg import coordinate
 #from robot_msgs.msg import tasks

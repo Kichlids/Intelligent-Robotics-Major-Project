@@ -102,6 +102,8 @@ def astar_search(graph, heuristics, start, end):
                 open.append(neighbor)
     # Return None, no path is found
     return None
+    
+
 # Check if a neighbor should be added to open list
 def add_to_open(open, neighbor):
     for node in open:

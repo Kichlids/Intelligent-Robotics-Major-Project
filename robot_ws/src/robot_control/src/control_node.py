@@ -3,6 +3,9 @@
 import rospy
 import math
 
+from path_finding import Graph
+from path_finding import astar_search
+
 from geometry_msgs.msg import Twist
 from nav_msgs.msg import Odometry
 from sensor_msgs.msg import LaserScan
@@ -181,6 +184,38 @@ class Laser():
             # waypoints[i].to_string()
 
         # return waypoints
+
+class Plan():
+    def __init__(self):
+        self.support = Support()
+        self.graph = Graph() 
+
+    def plan_route(self, list_set):
+
+        # Plan the route from the initial location to the tour start location
+        # add this to the master list of points
+
+        # Next plan routes from the start location to each Point of Interest
+        # adding each successive path to the master list
+        # once done traverse the master path
+
+        nodes = {}
+        nodes['Node1'] = [0, 0]
+        nodes['Node2'] = [0, 10]
+
+        self.graph.connect('Node1', 'Node2', 10)
+
+        self.graph.make_undirected()
+        # Create heuristics (straight-line distance, air-travel distance)
+        heuristics = {}
+
+        heuristics['Node1'] = 204
+            
+        # Run the search algorithm
+        path = astar_search(self.graph, heuristics, 'Node2', 'Node6')
+        print(path)
+        print()
+
 
 class Support():
 
