@@ -188,27 +188,21 @@ class Laser():
 class Plan():
     def __init__(self):
         self.support = Support()
-        self.graph = Graph() 
-
-    def plan_route(self, list_set):
-
-        # Plan the route from the initial location to the tour start location
-        # add this to the master list of points
-
-        # Next plan routes from the start location to each Point of Interest
-        # adding each successive path to the master list
-        # once done traverse the master path
-
+        self.graph = Graph()
+        # needs to update        
+        self.current_node = 'Node1'
+        # list of all nodes
+        self.nodes = {}
+        self.nodes['Node1'] = [0, 0]
+        self.nodes['Node2'] = [0, 10]
+        self.nodes['Node3'] = [20, 10]
+        self.nodes['Node4'] = [5, 0]
+        self.nodes['Node5'] = [5, 5]
+        self.nodes['Node6'] = [20, 5]
         
-
-        nodes = {}
-        nodes['Node1'] = [0, 0]
-        nodes['Node2'] = [0, 10]
-        nodes['Node3'] = [20, 10]
-        nodes['Node4'] = [5, 0]
-        nodes['Node5'] = [5, 5]
-        nodes['Node6'] = [20, 5]
-
+        # list of important nodes (just the names)
+        self.imp_nodes = ['Node3', 'Node5']
+        
         self.graph.connect('Node1', 'Node2', 10)
         self.graph.connect('Node1', 'Node4', 5)
         self.graph.connect('Node2', 'Node3', 20)
@@ -216,13 +210,58 @@ class Plan():
         self.graph.connect('Node5', 'Node6', 15)
         self.graph.connect('Node3', 'Node6', 5)
         self.graph.make_undirected()
+        
+        self.astar = Astar(nodes, self.graph)
+        self.astar.compute_heuristics('Node6')
+        
+        self.plan = []
+    
+    # function for guidance from point A to point B
+    # assuming the arguments are the names of the nodes
+    def plan_route(self, first_node, second_node):
+        if first_node not in self.nodes.keys:
+            print('Location not found')
+            # return something?
+        if second_node not in self.nodes.keys:
+            print('Location not found')
+            # return something?
 
-        astar = Astar(nodes, self.graph)
-        astar.compute_heuristics('Node6')
-
-        # Run the search algorithm
-        path = astar_search('Node2', 'Node6')
+        # Plan the route from the initial location to the guide start location
+        # add this to the master list of points
+        path = self.astar_search(current_node, first_node)
         print(path)
+        # add coordinates to the master plan
+        for node in path:
+            self.plan.append(self.nodes.get(node))
+        
+        # Next plan routes from the start location to the destination
+        path = self.astar_search(first_node, second_node)
+        print(path)
+        # add coordinates to the master plan
+        for node in path:
+            self.plan.append(self.nodes.get(node))
+        
+        # once done traverse the master path
+        
+        
+        
+    
+    def tour(self, first_node):
+        if first_node not in self.nodes.keys:
+            print('Location not found')
+            # return something?
+            
+        # Plan the route from the initial location to the tour start location
+        # add this to the master list of points
+        path = self.astar_search(current_node, first_node)
+        print(path)
+        # add coordinates to the master plan
+        for node in path:
+            self.plan.append(self.nodes.get(node))
+            
+        # Next plan routes from the start location to the points of interest
+        # adding each successive path to the master list
+        # calculating A* to find the closest node from start and looping for each successive node
 
 
 class Support():

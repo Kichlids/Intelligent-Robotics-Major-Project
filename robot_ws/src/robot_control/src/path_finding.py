@@ -119,9 +119,11 @@ class Astar:
             if current_node == goal_node:
                 path = []
                 while current_node != start_node:
-                    path.append(current_node.name + ': ' + str(current_node.g))
+                    # path.append(current_node.name + ': ' + str(current_node.g))
+                    path.append(current_node.name)
                     current_node = current_node.parent
-                path.append(start_node.name + ': ' + str(start_node.g))
+                # path.append(start_node.name + ': ' + str(start_node.g))
+                path.append(start_node.name)
                 # Return reversed path
                 return path[::-1]
             # Get neighbours
@@ -153,27 +155,27 @@ class Astar:
         return True
 
 
-graph = Graph()
+# graph = Graph()
 
-nodes = {}
-nodes['Node1'] = [0, 0]
-nodes['Node2'] = [0, 10]
-nodes['Node3'] = [20, 10]
-nodes['Node4'] = [5, 0]
-nodes['Node5'] = [5, 5]
-nodes['Node6'] = [20, 5]
+# nodes = {}
+# nodes['Node1'] = [0, 0]
+# nodes['Node2'] = [0, 10]
+# nodes['Node3'] = [20, 10]
+# nodes['Node4'] = [5, 0]
+# nodes['Node5'] = [5, 5]
+# nodes['Node6'] = [20, 5]
 
-graph.connect('Node1', 'Node2', 10)
-graph.connect('Node1', 'Node4', 5)
-graph.connect('Node2', 'Node3', 20)
-graph.connect('Node4', 'Node5', 5)
-graph.connect('Node5', 'Node6', 15)
-graph.connect('Node3', 'Node6', 5)
-graph.make_undirected()
+# graph.connect('Node1', 'Node2', 10)
+# graph.connect('Node1', 'Node4', 5)
+# graph.connect('Node2', 'Node3', 20)
+# graph.connect('Node4', 'Node5', 5)
+# graph.connect('Node5', 'Node6', 15)
+# graph.connect('Node3', 'Node6', 5)
+# graph.make_undirected()
 
 
-astar = Astar(nodes, graph)
+# astar = Astar(nodes, graph)
 
 # Run the search algorithm
-path = astar.astar_search('Node2', 'Node4')
-print(path)
+# path = astar.astar_search('Node2', 'Node4')
+# print(path)
