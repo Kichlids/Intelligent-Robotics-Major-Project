@@ -1,0 +1,1 @@
+robot_msgs/coordinate[] coord_list
