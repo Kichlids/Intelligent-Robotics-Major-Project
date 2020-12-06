@@ -57,26 +57,10 @@ class Node:
 class Astar:
 
     def __init__(self, nodes, graph):
-        # Construct nodes
+
         self.nodes = nodes
-        # self.nodes['Node1'] = [0, 0]
-        # self.nodes['Node2'] = [0, 10]
-        # self.nodes['Node3'] = [20, 10]
-        # self.nodes['Node4'] = [5, 0]
-        # self.nodes['Node5'] = [5, 5]
-        # self.nodes['Node6'] = [20, 5]
-
-        # Create a graph and conections between nodes using actual distance
         self.graph = graph
-        # self.graph.connect('Node1', 'Node2', 10)
-        # self.graph.connect('Node1', 'Node4', 5)
-        # self.graph.connect('Node2', 'Node3', 20)
-        # self.graph.connect('Node4', 'Node5', 5)
-        # self.graph.connect('Node5', 'Node6', 15)
-        # self.graph.connect('Node3', 'Node6', 5)
 
-        # Make graph undirected, create symmetric connections (A->B == B->A)
-        self.graph.make_undirected()
         # Create heuristics (straight-line distance, air-travel distance)
         self.heuristics = {}
 
