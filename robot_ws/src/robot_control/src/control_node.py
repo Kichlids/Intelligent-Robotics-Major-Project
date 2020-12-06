@@ -7,9 +7,10 @@ from geometry_msgs.msg import Twist
 from nav_msgs.msg import Odometry
 from sensor_msgs.msg import LaserScan
 from std_msgs.msg import Bool
+from std_msgs.msg import Int32
 
-from robot_msgs.msg import coordinate
-from robot_msgs.msg import tasks
+#from robot_msgs.msg import coordinate
+#from robot_msgs.msg import tasks
 
 from tf.transformations import euler_from_quaternion
 
@@ -129,6 +130,7 @@ class Laser():
         else:
             self.obstacle_detected = False
 
+# TODO: Replace Plan() with PlanAStar or such
 class Plan():
 
     def __init__(self):
@@ -354,7 +356,7 @@ class Navigation():
         print('Finished')
         #print(my_location.to_string())
 
-def tasks_callback(data):
+def choice_callback(data):
     busy_bool.data = True
     busy_pub.publish(busy_bool)
 
@@ -364,24 +366,35 @@ def tasks_callback(data):
     planner = Plan()
     navigator = Navigation(laser)
 
-    points = []
+    if data == 1:
+        print "choice was 1"
+        # Initial location is West Devon
+    elif data == 2:
+        print "choice was 2"
+        # Initial location is East Devon
 
-    for i in range(0, len(data.coord_list), 2):
-        print "i: " + str(i) + ", length: " + str(len(data.coord_list))
+    # points = []
 
-        temp = []
+    # for i in range(0, len(data.coord_list), 2):
+    #     print "i: " + str(i) + ", length: " + str(len(data.coord_list))
 
-        start = Coord(data.coord_list[i].x_coord, data.coord_list[i].y_coord)
-        end = Coord(data.coord_list[i + 1].x_coord, data.coord_list[i + 1].y_coord)
+    #     temp = []
 
-        temp.append(start)
-        temp.append(end)
+    #     start = Coord(data.coord_list[i].x_coord, data.coord_list[i].y_coord)
+    #     end = Coord(data.coord_list[i + 1].x_coord, data.coord_list[i + 1].y_coord)
 
-        points.append(temp)
+    #     temp.append(start)
+    #     temp.append(end)
 
-    waypoints = planner.plan_route(points)
+    #     points.append(temp)
 
-    navigator.navigate(waypoints)
+    ### TODO: Actually navigate etc.
+    ### First find a path to tour start location from current location
+    ### Then, create regular tour path etc...
+
+    # waypoints = planner.plan_route(points)
+
+    # navigator.navigate(waypoints)
 
     busy_bool.data = False
     busy_pub.publish(busy_bool)
@@ -396,7 +409,7 @@ def init_control_node():
 
     # First time
     global busy_pub
-    tasks_sub = rospy.Subscriber('/robot/tasks', tasks, tasks_callback)
+    choice_sub = rospy.Subscriber('/robot/choice', Int32, choice_callback)
     busy_pub = rospy.Publisher('/robot/busy_bool', Bool, queue_size=10)
     while not busy_bool.data:
         busy_pub.publish(busy_bool)
