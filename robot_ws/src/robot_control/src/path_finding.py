@@ -82,20 +82,15 @@ class Astar:
 
         self.compute_heuristics('Node6')
 
-        # self.heuristics['Node1'] = 204
-        # self.heuristics['Node2'] = 247
-        # self.heuristics['Node3'] = 215
-        # self.heuristics['Node4'] = 137
-        # self.heuristics['Node5'] = 318
-        # self.heuristics['Node6'] = 0
-
+        '''
         for key in self.heuristics:
             print(key + ': ' + str(self.heuristics.get(key)))
+        '''
         
-        # # Run the search algorithm
-        # path = self.astar_search(self.graph, self.heuristics, 'Node2', 'Node6')
-        # print(path)
-        # print()
+        # Run the search algorithm
+        path = self.astar_search(self.graph, self.heuristics, 'Node2', 'Node6')
+        print(path)
+        print()
 
     def compute_heuristics(self, end_node_name):
 
@@ -160,7 +155,7 @@ class Astar:
                 neighbor.h = heuristics.get(neighbor.name)
                 neighbor.f = neighbor.g + neighbor.h
                 # Check if neighbor is in open list and if it has a lower f value
-                if(add_to_open(open, neighbor) == True):
+                if(self.add_to_open(open, neighbor) == True):
                     # Everything is green, add neighbor to open list
                     open.append(neighbor)
         # Return None, no path is found
@@ -175,6 +170,3 @@ class Astar:
         return True
 
 astar = Astar()
-        
-# Tell python to run main method
-if __name__ == "__main__": main()
