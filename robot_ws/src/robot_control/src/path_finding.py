@@ -56,31 +56,31 @@ class Node:
 
 class Astar:
 
-    def __init__(self):
+    def __init__(self, nodes, graph):
         # Construct nodes
-        self.nodes = {}
-        self.nodes['Node1'] = [0, 0]
-        self.nodes['Node2'] = [0, 10]
-        self.nodes['Node3'] = [20, 10]
-        self.nodes['Node4'] = [5, 0]
-        self.nodes['Node5'] = [5, 5]
-        self.nodes['Node6'] = [20, 5]
+        self.nodes = nodes
+        # self.nodes['Node1'] = [0, 0]
+        # self.nodes['Node2'] = [0, 10]
+        # self.nodes['Node3'] = [20, 10]
+        # self.nodes['Node4'] = [5, 0]
+        # self.nodes['Node5'] = [5, 5]
+        # self.nodes['Node6'] = [20, 5]
 
         # Create a graph and conections between nodes using actual distance
-        self.graph = Graph()
-        self.graph.connect('Node1', 'Node2', 10)
-        self.graph.connect('Node1', 'Node4', 5)
-        self.graph.connect('Node2', 'Node3', 20)
-        self.graph.connect('Node4', 'Node5', 5)
-        self.graph.connect('Node5', 'Node6', 15)
-        self.graph.connect('Node3', 'Node6', 5)
+        self.graph = graph
+        # self.graph.connect('Node1', 'Node2', 10)
+        # self.graph.connect('Node1', 'Node4', 5)
+        # self.graph.connect('Node2', 'Node3', 20)
+        # self.graph.connect('Node4', 'Node5', 5)
+        # self.graph.connect('Node5', 'Node6', 15)
+        # self.graph.connect('Node3', 'Node6', 5)
 
         # Make graph undirected, create symmetric connections (A->B == B->A)
         self.graph.make_undirected()
         # Create heuristics (straight-line distance, air-travel distance)
         self.heuristics = {}
 
-        self.compute_heuristics('Node6')
+        #self.compute_heuristics('Node6')
 
         '''
         for key in self.heuristics:
@@ -88,9 +88,9 @@ class Astar:
         '''
         
         # Run the search algorithm
-        path = self.astar_search(self.graph, self.heuristics, 'Node2', 'Node6')
-        print(path)
-        print()
+        # path = self.astar_search(self.graph, self.heuristics, 'Node2', 'Node6')
+        # print(path)
+        # print()
 
     def compute_heuristics(self, end_node_name):
 
@@ -109,7 +109,9 @@ class Astar:
                 
 
     # A* search
-    def astar_search(self, graph, heuristics, start, end):
+    def astar_search(self, start, end):
+
+        self.compute_heuristics(end)
         
         # Create lists for open nodes and closed nodes
         open = []
@@ -139,7 +141,7 @@ class Astar:
                 # Return reversed path
                 return path[::-1]
             # Get neighbours
-            neighbors = graph.get(current_node.name)
+            neighbors = self.graph.get(current_node.name)
             # Loop neighbors
             for key, value in neighbors.items():
                 # Create a neighbor node
@@ -148,8 +150,8 @@ class Astar:
                 if(neighbor in closed):
                     continue
                 # Calculate full path cost
-                neighbor.g = current_node.g + graph.get(current_node.name, neighbor.name)
-                neighbor.h = heuristics.get(neighbor.name)
+                neighbor.g = current_node.g + self.graph.get(current_node.name, neighbor.name)
+                neighbor.h = self.heuristics.get(neighbor.name)
                 neighbor.f = neighbor.g + neighbor.h
                 # Check if neighbor is in open list and if it has a lower f value
                 if(self.add_to_open(open, neighbor) == True):
@@ -166,4 +168,28 @@ class Astar:
                 return False
         return True
 
-astar = Astar()
+
+graph = Graph()
+
+nodes = {}
+nodes['Node1'] = [0, 0]
+nodes['Node2'] = [0, 10]
+nodes['Node3'] = [20, 10]
+nodes['Node4'] = [5, 0]
+nodes['Node5'] = [5, 5]
+nodes['Node6'] = [20, 5]
+
+graph.connect('Node1', 'Node2', 10)
+graph.connect('Node1', 'Node4', 5)
+graph.connect('Node2', 'Node3', 20)
+graph.connect('Node4', 'Node5', 5)
+graph.connect('Node5', 'Node6', 15)
+graph.connect('Node3', 'Node6', 5)
+graph.make_undirected()
+
+
+astar = Astar(nodes, graph)
+
+# Run the search algorithm
+path = astar.astar_search('Node2', 'Node4')
+print(path)

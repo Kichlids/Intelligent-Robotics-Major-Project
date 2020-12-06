@@ -4,7 +4,7 @@ import rospy
 import math
 
 from path_finding import Graph
-from path_finding import astar_search
+from path_finding import Astar
 
 from geometry_msgs.msg import Twist
 from nav_msgs.msg import Odometry
@@ -199,22 +199,30 @@ class Plan():
         # adding each successive path to the master list
         # once done traverse the master path
 
+        
+
         nodes = {}
         nodes['Node1'] = [0, 0]
         nodes['Node2'] = [0, 10]
+        nodes['Node3'] = [20, 10]
+        nodes['Node4'] = [5, 0]
+        nodes['Node5'] = [5, 5]
+        nodes['Node6'] = [20, 5]
 
         self.graph.connect('Node1', 'Node2', 10)
-
+        self.graph.connect('Node1', 'Node4', 5)
+        self.graph.connect('Node2', 'Node3', 20)
+        self.graph.connect('Node4', 'Node5', 5)
+        self.graph.connect('Node5', 'Node6', 15)
+        self.graph.connect('Node3', 'Node6', 5)
         self.graph.make_undirected()
-        # Create heuristics (straight-line distance, air-travel distance)
-        heuristics = {}
 
-        heuristics['Node1'] = 204
-            
+        astar = Astar(nodes, self.graph)
+        astar.compute_heuristics('Node6')
+
         # Run the search algorithm
-        path = astar_search(self.graph, heuristics, 'Node2', 'Node6')
+        path = astar_search('Node2', 'Node6')
         print(path)
-        print()
 
 
 class Support():
