@@ -53,139 +53,128 @@ class Node:
     def __repr__(self):
         return ('({0},{1})'.format(self.name, self.f))
 
-# A* search
-def astar_search(graph, heuristics, start, end):
-    
-    # Create lists for open nodes and closed nodes
-    open = []
-    closed = []
-    # Create a start node and an goal node
-    start_node = Node(start, None)
-    goal_node = Node(end, None)
-    # Add the start node
-    open.append(start_node)
-    
-    # Loop until the open list is empty
-    while len(open) > 0:
-        # Sort the open list to get the node with the lowest cost first
-        open.sort()
-        # Get the node with the lowest cost
-        current_node = open.pop(0)
-        # Add the current node to the closed list
-        closed.append(current_node)
+
+class Astar:
+
+    def __init__(self):
+        # Construct nodes
+        self.nodes = {}
+        self.nodes['Node1'] = [0, 0]
+        self.nodes['Node2'] = [0, 10]
+        self.nodes['Node3'] = [20, 10]
+        self.nodes['Node4'] = [5, 0]
+        self.nodes['Node5'] = [5, 5]
+        self.nodes['Node6'] = [20, 5]
+
+        # Create a graph and conections between nodes using actual distance
+        self.graph = Graph()
+        self.graph.connect('Node1', 'Node2', 10)
+        self.graph.connect('Node1', 'Node4', 5)
+        self.graph.connect('Node2', 'Node3', 20)
+        self.graph.connect('Node4', 'Node5', 5)
+        self.graph.connect('Node5', 'Node6', 15)
+        self.graph.connect('Node3', 'Node6', 5)
+
+        # Make graph undirected, create symmetric connections (A->B == B->A)
+        self.graph.make_undirected()
+        # Create heuristics (straight-line distance, air-travel distance)
+        self.heuristics = {}
+
+        self.compute_heuristics('Node6')
+
+        # self.heuristics['Node1'] = 204
+        # self.heuristics['Node2'] = 247
+        # self.heuristics['Node3'] = 215
+        # self.heuristics['Node4'] = 137
+        # self.heuristics['Node5'] = 318
+        # self.heuristics['Node6'] = 0
+
+        for key in self.heuristics:
+            print(key + ': ' + str(self.heuristics.get(key)))
         
-        # Check if we have reached the goal, return the path
-        if current_node == goal_node:
-            path = []
-            while current_node != start_node:
-                path.append(current_node.name + ': ' + str(current_node.g))
-                current_node = current_node.parent
-            path.append(start_node.name + ': ' + str(start_node.g))
-            # Return reversed path
-            return path[::-1]
-        # Get neighbours
-        neighbors = graph.get(current_node.name)
-        # Loop neighbors
-        for key, value in neighbors.items():
-            # Create a neighbor node
-            neighbor = Node(key, current_node)
-            # Check if the neighbor is in the closed list
-            if(neighbor in closed):
-                continue
-            # Calculate full path cost
-            neighbor.g = current_node.g + graph.get(current_node.name, neighbor.name)
-            neighbor.h = heuristics.get(neighbor.name)
-            neighbor.f = neighbor.g + neighbor.h
-            # Check if neighbor is in open list and if it has a lower f value
-            if(add_to_open(open, neighbor) == True):
-                # Everything is green, add neighbor to open list
-                open.append(neighbor)
-    # Return None, no path is found
-    return None
-    
+        # # Run the search algorithm
+        # path = self.astar_search(self.graph, self.heuristics, 'Node2', 'Node6')
+        # print(path)
+        # print()
 
-# Check if a neighbor should be added to open list
-def add_to_open(open, neighbor):
-    for node in open:
-        if (neighbor == node and neighbor.f > node.f):
-            return False
-    return True
+    def compute_heuristics(self, end_node_name):
 
-# The main entry point for this module
-def main():
-    nodes = {}
-    nodes['Node1'] = [0, 0]
-    nodes['Node2'] = [0, 10]
-    nodes['Node3'] = [20, 10]
-    nodes['Node4'] = [5, 0]
-    nodes['Node5'] = [5, 5]
-    nodes['Node6'] = [20, 5]
-    # node_names = ['Node1', 'Node2', 'Node3', 'Node4', 'Node5', 'Node6']
-    # node_coords = [[0, 0],[0, 10], [20, 10], [5, 0], [5, 5], [20, 5]]
-    # Create a graph
-    graph = Graph()
-    # Create graph connections (Actual distance)
-    graph.connect('Node1', 'Node2', 10)
-    graph.connect('Node1', 'Node4', 5)
-    graph.connect('Node2', 'Node3', 20)
-    graph.connect('Node4', 'Node5', 5)
-    graph.connect('Node5', 'Node6', 15)
-    graph.connect('Node3', 'Node6', 5)
-    # graph.connect('Frankfurt', 'Wurzburg', 111)
-    # graph.connect('Frankfurt', 'Mannheim', 85)
-    # graph.connect('Wurzburg', 'Nurnberg', 104)
-    # graph.connect('Wurzburg', 'Stuttgart', 140)
-    # graph.connect('Wurzburg', 'Ulm', 183)
-    # graph.connect('Mannheim', 'Nurnberg', 230)
-    # graph.connect('Mannheim', 'Karlsruhe', 67)
-    # graph.connect('Karlsruhe', 'Basel', 191)
-    # graph.connect('Karlsruhe', 'Stuttgart', 64)
-    # graph.connect('Nurnberg', 'Ulm', 171)
-    # graph.connect('Nurnberg', 'Munchen', 170)
-    # graph.connect('Nurnberg', 'Passau', 220)
-    # graph.connect('Stuttgart', 'Ulm', 107)
-    # graph.connect('Basel', 'Bern', 91)
-    # graph.connect('Basel', 'Zurich', 85)
-    # graph.connect('Bern', 'Zurich', 120)
-    # graph.connect('Zurich', 'Memmingen', 184)
-    # graph.connect('Memmingen', 'Ulm', 55)
-    # graph.connect('Memmingen', 'Munchen', 115)
-    # graph.connect('Munchen', 'Ulm', 123)
-    # graph.connect('Munchen', 'Passau', 189)
-    # graph.connect('Munchen', 'Rosenheim', 59)
-    # graph.connect('Rosenheim', 'Salzburg', 81)
-    # graph.connect('Passau', 'Linz', 102)
-    # graph.connect('Salzburg', 'Linz', 126)
-    # Make graph undirected, create symmetric connections
-    graph.make_undirected()
-    # Create heuristics (straight-line distance, air-travel distance)
-    heuristics = {}
-    # heuristics['Basel'] = 204
-    # heuristics['Bern'] = 247
-    # heuristics['Frankfurt'] = 215
-    # heuristics['Karlsruhe'] = 137
-    # heuristics['Linz'] = 318
-    # heuristics['Mannheim'] = 164
-    # heuristics['Munchen'] = 120
-    # heuristics['Memmingen'] = 47
-    # heuristics['Nurnberg'] = 132
-    # heuristics['Passau'] = 257
-    # heuristics['Rosenheim'] = 168
-    # heuristics['Stuttgart'] = 75
-    # heuristics['Salzburg'] = 236
-    # heuristics['Wurzburg'] = 153
-    # heuristics['Zurich'] = 157
-    # heuristics['Ulm'] = 0
-    heuristics['Node1'] = 204
-    heuristics['Node2'] = 247
-    heuristics['Node3'] = 215
-    heuristics['Node4'] = 137
-    heuristics['Node5'] = 318
-    heuristics['Node6'] = 164
-    
-    # Run the search algorithm
-    path = astar_search(graph, heuristics, 'Node2', 'Node6')
-    print(path)
-    print()
+        x0 = self.nodes.get(end_node_name)[0]
+        y0 = self.nodes.get(end_node_name)[1]
+        
+        # Construct heristics with air travel distance
+        for node_name in self.nodes:
+            if node_name == end_node_name:
+                self.heuristics[node_name] = 0
+            else:
+                x1 = self.nodes.get(node_name)[0]
+                y1 = self.nodes.get(node_name)[1]
+
+                dist = ((x1 - x0) ** 2 + (y1 - y0) ** 2) ** 0.5
+
+                self.heuristics[node_name] = dist
+                
+                
+
+    # A* search
+    def astar_search(self, graph, heuristics, start, end):
+        
+        # Create lists for open nodes and closed nodes
+        open = []
+        closed = []
+        # Create a start node and an goal node
+        start_node = Node(start, None)
+        goal_node = Node(end, None)
+        # Add the start node
+        open.append(start_node)
+        
+        # Loop until the open list is empty
+        while len(open) > 0:
+            # Sort the open list to get the node with the lowest cost first
+            open.sort()
+            # Get the node with the lowest cost
+            current_node = open.pop(0)
+            # Add the current node to the closed list
+            closed.append(current_node)
+            
+            # Check if we have reached the goal, return the path
+            if current_node == goal_node:
+                path = []
+                while current_node != start_node:
+                    path.append(current_node.name + ': ' + str(current_node.g))
+                    current_node = current_node.parent
+                path.append(start_node.name + ': ' + str(start_node.g))
+                # Return reversed path
+                return path[::-1]
+            # Get neighbours
+            neighbors = graph.get(current_node.name)
+            # Loop neighbors
+            for key, value in neighbors.items():
+                # Create a neighbor node
+                neighbor = Node(key, current_node)
+                # Check if the neighbor is in the closed list
+                if(neighbor in closed):
+                    continue
+                # Calculate full path cost
+                neighbor.g = current_node.g + graph.get(current_node.name, neighbor.name)
+                neighbor.h = heuristics.get(neighbor.name)
+                neighbor.f = neighbor.g + neighbor.h
+                # Check if neighbor is in open list and if it has a lower f value
+                if(add_to_open(open, neighbor) == True):
+                    # Everything is green, add neighbor to open list
+                    open.append(neighbor)
+        # Return None, no path is found
+        return None
+        
+
+    # Check if a neighbor should be added to open list
+    def add_to_open(self, open, neighbor):
+        for node in open:
+            if (neighbor == node and neighbor.f > node.f):
+                return False
+        return True
+
+astar = Astar()
+        
 # Tell python to run main method
 if __name__ == "__main__": main()
