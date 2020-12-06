@@ -131,56 +131,56 @@ class Laser():
             self.obstacle_detected = False
 
 # TODO: Replace Plan() with PlanAStar or such
-class Plan():
+# class Plan():
+    # def __init__(self):
+        # self.support = Support()
 
-    def __init__(self):
-        self.support = Support()
+    # def plan_route(self, list_set):
+        # global my_location
 
-    def plan_route(self, list_set):
-        global my_location
+        # coord_pairs = list_set
 
-        coord_pairs = list_set
-
-        waypoints = []
+        # waypoints = []
         
-        start = my_location        
+        # start = my_location        
+        
+        # min_dist = float('inf')
+        # min_index = -1
+        
+        # for i in range(len(coord_pairs)):
 
-        min_dist = float('inf')
-        min_index = -1
-        for i in range(len(coord_pairs)):
+            # dist = self.support.calculate_distance(start, coord_pairs[i][0])
+            # if dist < min_dist:
+                # min_dist = dist
+                # min_index = i
 
-            dist = self.support.calculate_distance(start, coord_pairs[i][0])
-            if dist < min_dist:
-                min_dist = dist
-                min_index = i
+        # waypoints.append(coord_pairs[min_index][0])
+        # waypoints.append(coord_pairs[min_index][1])
 
-        waypoints.append(coord_pairs[min_index][0])
-        waypoints.append(coord_pairs[min_index][1])
+        # start = coord_pairs[min_index][1]
+        # coord_pairs.pop(min_index)
 
-        start = coord_pairs[min_index][1]
-        coord_pairs.pop(min_index)
+        # while len(coord_pairs) > 0:
 
-        while len(coord_pairs) > 0:
+            # min_dist = float('inf')
+            # min_index = -1
 
-            min_dist = float('inf')
-            min_index = -1
-
-            for i in range(len(coord_pairs)):
-                dist = self.support.calculate_distance(start, coord_pairs[i][0])
-                if dist < min_dist:
-                    min_dist = dist
-                    min_index = i
+            # for i in range(len(coord_pairs)):
+                # dist = self.support.calculate_distance(start, coord_pairs[i][0])
+                # if dist < min_dist:
+                    # min_dist = dist
+                    # min_index = i
             
-            waypoints.append(coord_pairs[min_index][0])
-            waypoints.append(coord_pairs[min_index][1])
+            # waypoints.append(coord_pairs[min_index][0])
+            # waypoints.append(coord_pairs[min_index][1])
             
-            start = coord_pairs[min_index][1]
-            coord_pairs.pop(min_index)
+            # start = coord_pairs[min_index][1]
+            # coord_pairs.pop(min_index)
 
-        for i in range(len(waypoints)):
-            waypoints[i].to_string()
+        # for i in range(len(waypoints)):
+            # waypoints[i].to_string()
 
-        return waypoints
+        # return waypoints
 
 class Support():
 
