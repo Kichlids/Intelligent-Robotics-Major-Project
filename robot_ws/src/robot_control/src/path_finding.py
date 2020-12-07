@@ -159,10 +159,36 @@ class Astar:
         
         return pure_path, dist
 
-
+    # return tour path
     def find_tour_path(self, start, important_nodes):
-        # return tour path
+        list_impt_nodes = important_nodes
+        tour_path = []
+        temp_path = []
+        target_node = ''
+        current_node = start
+        
+        # keeps looping until all the important nodes have been removed from the list
+        while not list_impt_nodes:
+            min_cost = 100
+            # find the important node with the least distance/cost from the current node
+            for node in list_impt_nodes:
+                path, dist = astar(current_node, node)
+                if min_cost > dist:
+                    min_cost = dist
+                    temp_path = path
+                    target_node = node
+            # add the path to important node with the least distance
+            tour_path.append(path)
+            current_node = target_node
+            # remove it from the list
+            list_impt_nodes.remove(target_node)
+            
+        # find path from last important node to the start location to complete tour
+        path, dist = astar(current_node, start)
+        tour_path.append(path)
+        
         print('ok')
+        return tour_path
 
 nodes = {}
 nodes['Node1'] = [6, 2]

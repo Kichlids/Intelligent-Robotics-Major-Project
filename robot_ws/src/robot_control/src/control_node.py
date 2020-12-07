@@ -204,15 +204,19 @@ class Plan():
 
         # list of all nodes (coord in meters!)
         self.nodes = {}
+        # CS/ECE office
         self.nodes['Node1'] = [6, 2]
         self.nodes['Node2'] = [6, 7]
+        # electronics lab
         self.nodes['Node3'] = [8.5, 7]
+        # devon atrium
         self.nodes['Node4'] = [11, 7]
         self.nodes['Node5'] = [11, 1]
         self.nodes['Node6'] = [18, 0]
         self.nodes['Node7'] = [18, 4]
         self.nodes['Node8'] = [24, 4]
         self.nodes['Node9'] = [6, 30]
+        # computer lab
         self.nodes['Node10'] = [8.5, 30]
         self.nodes['Node11'] = [11, 30]
         self.nodes['Node12'] = [11, 37]
@@ -223,11 +227,13 @@ class Plan():
         self.nodes['Node17'] = [28, 18]
         self.nodes['Node18'] = [28, 21]
         self.nodes['Node19'] = [31.5, 27.5]
+        # practice bay
         self.nodes['Node20'] = [31.5, 32.5]
 
         
         # list of important nodes (just the names)
-        self.imp_nodes = ['Node3', 'Node5']
+        # TODO: change the names of the nodes to the corresponding location
+        self.imp_nodes = ['Devon_Atrium', 'Practice_Bay', 'Computer_Lab', 'Electronics_lab', 'CS/ECE_Office']
 
         self.graph.connect('Node1', 'Node2', 5)
         self.graph.connect('Node2', 'Node3', 2.5)
