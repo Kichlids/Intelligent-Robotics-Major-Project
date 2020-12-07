@@ -88,9 +88,7 @@ class Astar:
 
             dist = ((x1 - x0) ** 2 + (y1 - y0) ** 2) ** 0.5
 
-            self.heuristics[node_name] = dist
-                
-                
+            self.heuristics[node_name] = dist     
 
     # A* search
     def astar_search(self, start, end):
@@ -152,6 +150,7 @@ class Astar:
                 return False
         return True
     
+    # A* search but returns path and distance
     def astar(self, start, end):
         path, dist = self.astar_search(start, end)
         pure_path = []
@@ -161,8 +160,9 @@ class Astar:
         return pure_path, dist
 
 
-
-# graph = Graph()
+    def find_tour_path(self, start, important_nodes):
+        # return tour path
+        print('ok')
 
 nodes = {}
 nodes['Node1'] = [6, 2]

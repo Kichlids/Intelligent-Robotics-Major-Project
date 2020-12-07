@@ -45,8 +45,12 @@ class Coord():
 
 
 my_location = Coord(0, 0)
+current_node = 'Node5'
+
 yaw = 0.0
 waypoints = []
+
+
 
 
 class Odom():
@@ -133,57 +137,60 @@ class Laser():
         else:
             self.obstacle_detected = False
 
+'''
 # TODO: Replace Plan() with PlanAStar or such
-# class Plan():
-    # def __init__(self):
-        # self.support = Support()
+class Plan():
+    def __init__(self):
+        self.support = Support()
 
-    # def plan_route(self, list_set):
-        # global my_location
+    def plan_route(self, list_set):
+        global my_location
 
-        # coord_pairs = list_set
+        coord_pairs = list_set
 
-        # waypoints = []
+        waypoints = []
         
-        # start = my_location        
+        start = my_location        
         
-        # min_dist = float('inf')
-        # min_index = -1
+        min_dist = float('inf')
+        min_index = -1
         
-        # for i in range(len(coord_pairs)):
+        for i in range(len(coord_pairs)):
 
-            # dist = self.support.calculate_distance(start, coord_pairs[i][0])
-            # if dist < min_dist:
-                # min_dist = dist
-                # min_index = i
+            dist = self.support.calculate_distance(start, coord_pairs[i][0])
+            if dist < min_dist:
+                min_dist = dist
+                min_index = i
 
-        # waypoints.append(coord_pairs[min_index][0])
-        # waypoints.append(coord_pairs[min_index][1])
+        waypoints.append(coord_pairs[min_index][0])
+        waypoints.append(coord_pairs[min_index][1])
 
-        # start = coord_pairs[min_index][1]
-        # coord_pairs.pop(min_index)
+        start = coord_pairs[min_index][1]
+        coord_pairs.pop(min_index)
 
-        # while len(coord_pairs) > 0:
+        while len(coord_pairs) > 0:
 
-            # min_dist = float('inf')
-            # min_index = -1
+            min_dist = float('inf')
+            min_index = -1
 
-            # for i in range(len(coord_pairs)):
-                # dist = self.support.calculate_distance(start, coord_pairs[i][0])
-                # if dist < min_dist:
-                    # min_dist = dist
-                    # min_index = i
+            for i in range(len(coord_pairs)):
+                dist = self.support.calculate_distance(start, coord_pairs[i][0])
+                if dist < min_dist:
+                    min_dist = dist
+                    min_index = i
             
-            # waypoints.append(coord_pairs[min_index][0])
-            # waypoints.append(coord_pairs[min_index][1])
+            waypoints.append(coord_pairs[min_index][0])
+            waypoints.append(coord_pairs[min_index][1])
             
-            # start = coord_pairs[min_index][1]
-            # coord_pairs.pop(min_index)
+            start = coord_pairs[min_index][1]
+            coord_pairs.pop(min_index)
 
-        # for i in range(len(waypoints)):
-            # waypoints[i].to_string()
+        for i in range(len(waypoints)):
+            waypoints[i].to_string()
 
-        # return waypoints
+        return waypoints
+'''
+
 
 class Plan():
     def __init__(self):
@@ -243,7 +250,7 @@ class Plan():
 
         self.graph.make_undirected()
         
-        self.astar = Astar(self.nodes, self.graph))
+        self.astar = Astar(self.nodes, self.graph)
         
         self.plan = []
     
@@ -257,22 +264,33 @@ class Plan():
             print('Location not found')
             # return something?
 
+
+
+        
+
         # Plan the route from the initial location to the guide start location
         # add this to the master list of points
-        path = self.astar_search(current_node, first_node)
-        print(path)
+        path, dist = self.astar.astar(current_node, first_node)
+        #print(path)
         # add coordinates to the master plan
         for node in path:
-            self.plan.append(self.nodes.get(node))
+            coord = Coord()
+            coord.x = self.nodes.get(node)[0]
+            coord.y = self.nodes.getInode)[1]
+            self.plan.append(coord)
         
         # Next plan routes from the start location to the destination
-        path = self.astar_search(first_node, second_node)
-        print(path)
+        path = self.astar.astar(first_node, second_node)
+        #print(path)
         # add coordinates to the master plan
         for node in path:
-            self.plan.append(self.nodes.get(node))
+            coord = Coord()
+            coord.x = self.nodes.get(node)[0]
+            coord.y = self.nodes.getInode)[1]
+            self.plan.append(coord)
         
         # once done traverse the master path
+        return path
         
         
         
@@ -293,6 +311,7 @@ class Plan():
         # Next plan routes from the start location to the points of interest
         # adding each successive path to the master list
         # calculating A* to find the closest node from start and looping for each successive node
+
 
 
 class Support():
@@ -432,11 +451,6 @@ class Navigation():
             
             if dist_diff < self.min_dist_to_dest:
                 self.min_dist_to_dest = dist_diff
-            '''
-            print('dist_diff ' + str(dist_diff))
-            print('min_diff ' + str(self.min_dist_to_dest))
-            print('T_diff ' + str(dist_diff - self.min_dist_to_dest))
-            '''
 
             
             if dist_diff - self.min_dist_to_dest > NAV_FAILURE_DISTANCE_THRESHOLD:
@@ -479,11 +493,21 @@ def choice_callback(data):
     planner = Plan()
     navigator = Navigation(laser)
 
-    if data == 1:
-        print "choice was 1"
-        # Initial location is West Devon
-    elif data == 2:
-        print "choice was 2"
+    
+    points = [[Coord(0, 0), Coord(-5, -5)]]
+    
+    # pass in a list of coords to plan route
+    waypoints = planner.plan_route(points)
+    for i in range(len(waypoints)):
+        print(waypoints[i].to_string())
+
+    navigator.navigate(waypoints)
+
+    # if data == 1:
+    #     print "choice was 1"
+    #     # Initial location is West Devon
+    # elif data == 2:
+    #     print "choice was 2"
         # Initial location is East Devon
 
     # points = []
