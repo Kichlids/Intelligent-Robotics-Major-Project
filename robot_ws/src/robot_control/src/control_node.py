@@ -193,26 +193,57 @@ class Plan():
         self.current_node = 'Node1'
         # list of all nodes
         self.nodes = {}
-        self.nodes['Node1'] = [0, 0]
-        self.nodes['Node2'] = [0, 10]
-        self.nodes['Node3'] = [20, 10]
-        self.nodes['Node4'] = [5, 0]
-        self.nodes['Node5'] = [5, 5]
-        self.nodes['Node6'] = [20, 5]
+        self.nodes['Node1'] = [6, 2]
+        self.nodes['Node2'] = [6, 7]
+        self.nodes['Node3'] = [8.5, 7]
+        self.nodes['Node4'] = [11, 7]
+        self.nodes['Node5'] = [11, 0]
+        self.nodes['Node6'] = [18, 0]
+        self.nodes['Node7'] = [18, 4]
+        self.nodes['Node8'] = [24, 4]
+        self.nodes['Node9'] = [6, 30]
+        self.nodes['Node10'] = [8.5, 30]
+        self.nodes['Node11'] = [11, 30]
+        self.nodes['Node12'] = [11, 37]
+        self.nodes['Node13'] = [18, 37]
+        self.nodes['Node14'] = [18, 32]
+        self.nodes['Node15'] = [24, 32]
+        self.nodes['Node16'] = [24, 18]
+        self.nodes['Node17'] = [28, 18]
+        self.nodes['Node18'] = [28, 21]
+        self.nodes['Node19'] = [31.5, 27.5]
+        self.nodes['Node20'] = [31.5, 32.5]
+
         
         # list of important nodes (just the names)
         self.imp_nodes = ['Node3', 'Node5']
-        
-        self.graph.connect('Node1', 'Node2', 10)
-        self.graph.connect('Node1', 'Node4', 5)
-        self.graph.connect('Node2', 'Node3', 20)
-        self.graph.connect('Node4', 'Node5', 5)
-        self.graph.connect('Node5', 'Node6', 15)
-        self.graph.connect('Node3', 'Node6', 5)
+
+        self.graph.connect('Node1', 'Node2', 5)
+        self.graph.connect('Node2', 'Node3', 2.5)
+        self.graph.connect('Node2', 'Node9', 23)
+        self.graph.connect('Node3', 'Node4', 2.5)
+        self.graph.connect('Node4', 'Node5', 7)
+        self.graph.connect('Node4', 'Node11', 23)
+        self.graph.connect('Node5', 'Node6', 7)
+        self.graph.connect('Node6', 'Node7', 4)
+        self.graph.connect('Node7', 'Node8', 6)
+        self.graph.connect('Node7', 'Node14', 28)
+        self.graph.connect('Node8', 'Node16', 14)
+        self.graph.connect('Node16', 'Node17', 4)
+        self.graph.connect('Node17', 'Node18', 3)
+        self.graph.connect('Node18', 'Node19', 7.38)
+        self.graph.connect('Node19', 'Node20', 5)
+        self.graph.connect('Node9', 'Node10', 2.5)
+        self.graph.connect('Node10', 'Node11', 2.5)
+        self.graph.connect('Node11', 'Node12', 7)
+        self.graph.connect('Node12', 'Node13', 7)
+        self.graph.connect('Node13', 'Node14', 5)
+        self.graph.connect('Node14', 'Node15', 6)
+        self.graph.connect('Node15', 'Node16', 14)
+
         self.graph.make_undirected()
         
-        self.astar = Astar(nodes, self.graph)
-        self.astar.compute_heuristics('Node6')
+        self.astar = Astar(self.nodes, self.graph))
         
         self.plan = []
     
