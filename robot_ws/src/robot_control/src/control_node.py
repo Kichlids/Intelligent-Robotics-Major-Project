@@ -276,7 +276,7 @@ class Plan():
             coord.y = self.nodes.getInode)[1]
             self.plan.append(coord)
 
-        path = self.astar.astar(first_node, second_node)
+        path, dist = self.astar.astar(first_node, second_node)
         for node in path:
             coord = Coord()
             coord.x = self.nodes.get(node)[0]
@@ -287,7 +287,7 @@ class Plan():
         node_path = path
         
         # once done traverse the master path
-        return path
+        return self.plan
         
         
         
@@ -297,18 +297,23 @@ class Plan():
             print('Location not found')
             # return something?
             
-        # Plan the route from the initial location to the tour start location
-        # add this to the master list of points
-        path = self.astar_search(current_node, first_node)
-        print(path)
+        path, dist = self.astar.astar(current_node, first_node)
         # add coordinates to the master plan
         for node in path:
-            self.plan.append(self.nodes.get(node))
+            coord = Coord()
+            coord.x = self.nodes.get(node)[0]
+            coord.y = self.nodes.getInode)[1]
+            self.plan.append(coord)
+        
+        path = self.astar.find_tour_path(first_node, self.important_nodes)
+        for node in path:
+            coord = Coord()
+            coord.x = self.nodes.get(node)[o]
+            coord.y = self.nodes.get(node)[1]
+            self.plan.append(coord)
+        
+        return self.plan
             
-        # Next plan routes from the start location to the points of interest
-        # adding each successive path to the master list
-        # calculating A* to find the closest node from start and looping for each successive node
-
 
 
 class Support():
