@@ -46,6 +46,8 @@ class Coord():
 
 my_location = Coord(0, 0)
 current_node = 'Node5'
+destination_node = ''
+node_path = []
 
 yaw = 0.0
 waypoints = []
@@ -197,7 +199,7 @@ class Plan():
         self.support = Support()
         self.graph = Graph()
         # needs to update        
-        self.current_node = 'Node1'
+        #self.current_node = 'Node1'
         # list of all nodes
         self.nodes = {}
         self.nodes['Node1'] = [6, 2]
@@ -257,6 +259,9 @@ class Plan():
     # function for guidance from point A to point B
     # assuming the arguments are the names of the nodes
     def plan_route(self, first_node, second_node):
+        global node_path
+        global destination_node
+
         if first_node not in self.nodes.keys:
             print('Location not found')
             # return something?
@@ -264,30 +269,22 @@ class Plan():
             print('Location not found')
             # return something?
 
-
-
-        
-
-        # Plan the route from the initial location to the guide start location
-        # add this to the master list of points
         path, dist = self.astar.astar(current_node, first_node)
-        #print(path)
-        # add coordinates to the master plan
+        for node in path:
+            coord = Coord()
+            coord.x = self.nodes.get(node)[0]
+            coord.y = self.nodes.getInode)[1]
+            self.plan.append(coord)
+
+        path = self.astar.astar(first_node, second_node)
         for node in path:
             coord = Coord()
             coord.x = self.nodes.get(node)[0]
             coord.y = self.nodes.getInode)[1]
             self.plan.append(coord)
         
-        # Next plan routes from the start location to the destination
-        path = self.astar.astar(first_node, second_node)
-        #print(path)
-        # add coordinates to the master plan
-        for node in path:
-            coord = Coord()
-            coord.x = self.nodes.get(node)[0]
-            coord.y = self.nodes.getInode)[1]
-            self.plan.append(coord)
+        destination_node = second_node
+        node_path = path
         
         # once done traverse the master path
         return path
@@ -405,8 +402,6 @@ class Navigation():
         while self.laser.obstacle_detected:            
             self.velocity_pub.publish(turn_msg)
 
-
-
     # Move in increments and turn
     def move_dist(self, waypoints):
         dist_diff = self.support.calculate_distance(my_location, waypoints[self.waypoint_index])
@@ -462,6 +457,7 @@ class Navigation():
 
     def navigate(self, waypoints):
         global my_location
+        global current_node
 
         # Assuming robot faces forward (+y direction) at 0,0 initially
         while self.waypoint_index < len(waypoints):
@@ -475,9 +471,11 @@ class Navigation():
 
             #print(my_location.to_string())
             print('Arrived at: ' + waypoints[self.waypoint_index].to_string())
+            #current_node = destination_node
 
             self.waypoint_index += 1
             self.min_dist_to_dest = float('inf')
+            current_node = node_path[self.waypoint_index]
             rospy.sleep(1)
         
         print('Finished')
