@@ -235,14 +235,14 @@ class Plan():
         self.nodes['Node14'] = [18, 33]
         self.nodes['Node15'] = [24, 33]
         # REPF sidewalk
-        self.nodes['Node16'] = [24, 19]
+        self.nodes['Node16'] = [24, 21]
         # REPF entrance
-        self.nodes['Node17'] = [28, 19]
+        self.nodes['Node17'] = [28, 21]
         # REPF lobby
-        self.nodes['Node18'] = [28, 21]
-        self.nodes['Node19'] = [31.5, 21]
+        self.nodes['Node18'] = [28, 23]
+        self.nodes['Node19'] = [31.5, 23]
         # practice bay
-        self.nodes['Node20'] = [31.5, 31]
+        self.nodes['Node20'] = [31.5, 33]
 
         
         # list of important nodes (just the names)
@@ -261,7 +261,7 @@ class Plan():
         self.graph.connect('Node6', 'Node7', 4)
         self.graph.connect('Node7', 'Node8', 6)
         self.graph.connect('Node7', 'Node14', 28)
-        self.graph.connect('Node8', 'Node16', 14)
+        self.graph.connect('Node8', 'Node16', 16)
         self.graph.connect('Node16', 'Node17', 4)
         self.graph.connect('Node17', 'Node18', 3)
         self.graph.connect('Node18', 'Node19', 3.5)
@@ -272,7 +272,7 @@ class Plan():
         self.graph.connect('Node12', 'Node13', 7)
         self.graph.connect('Node13', 'Node14', 5)
         self.graph.connect('Node14', 'Node15', 6)
-        self.graph.connect('Node15', 'Node16', 14)
+        self.graph.connect('Node15', 'Node16', 12)
 
         self.graph.make_undirected()
         
