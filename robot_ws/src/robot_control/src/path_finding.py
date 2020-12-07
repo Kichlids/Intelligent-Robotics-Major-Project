@@ -166,29 +166,38 @@ class Astar:
         temp_path = []
         target_node = ''
         current_node = start
+        total_dist = 0
         
         # keeps looping until all the important nodes have been removed from the list
-        while not list_impt_nodes:
+        while list_impt_nodes:
             min_cost = 100
             # find the important node with the least distance/cost from the current node
             for node in list_impt_nodes:
-                path, dist = astar(current_node, node)
+                path, dist = self.astar(current_node, node)
                 if min_cost > dist:
                     min_cost = dist
                     temp_path = path
                     target_node = node
+                    print(temp_path)
+                    print(min_cost)
             # add the path to important node with the least distance
-            tour_path.append(path)
+            tour_path = tour_path + temp_path
+            tour_path.pop()
             current_node = target_node
             # remove it from the list
             list_impt_nodes.remove(target_node)
+            total_dist = total_dist + min_cost
+            # print(current_node)
+            # print(tour_path)
+            # print(min_cost)
             
         # find path from last important node to the start location to complete tour
-        path, dist = astar(current_node, start)
-        tour_path.append(path)
+        path, dist = self.astar(current_node, start)
+        tour_path = tour_path + path
+        total_dist = total_dist + dist
         
         print('ok')
-        return tour_path
+        return tour_path, total_dist
 
 nodes = {}
 nodes['Node1'] = [6, 2]
@@ -211,6 +220,8 @@ nodes['Node17'] = [28, 18]
 nodes['Node18'] = [28, 21]
 nodes['Node19'] = [31.5, 27.5]
 nodes['Node20'] = [31.5, 32.5]
+
+important_nodes = ['Node20', 'Node1']
 
 graph = Graph()
 graph.connect('Node1', 'Node2', 5)
@@ -241,6 +252,6 @@ graph.make_undirected()
 astar = Astar(nodes, graph)
 
 #Run the search algorithm
-path, dist = astar.astar('Node9', 'Node20')
+path, dist = astar.find_tour_path('Node9', important_nodes)
 print(path)
 print(dist)

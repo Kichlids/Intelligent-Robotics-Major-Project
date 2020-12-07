@@ -299,6 +299,12 @@ class Plan():
         
     
     def tour(self, first_node):
+<<<<<<< HEAD
+=======
+        # if first_node not in self.nodes.keys:
+        #     print('Location not found')
+        #    # return something?
+>>>>>>> 55102904cb84f6d81ceee74787e11ca3a183c451
             
         path, dist = self.astar.astar(current_node, first_node)
         # add coordinates to the master plan
@@ -306,7 +312,7 @@ class Plan():
             coord = Coord(self.support.meters_to_feet(self.nodes.get(node)[0]), self.support.meters_to_feet(self.nodes.get(node)[1]))
             self.plan.append(coord)
         
-        path = self.astar.find_tour_path(first_node, self.important_nodes)
+        path, dist = self.astar.find_tour_path(first_node, self.important_nodes)
         for node in path:
             coord = Coord(self.support.meters_to_feet(self.nodes.get(node)[0]), self.support.meters_to_feet(self.nodes.get(node)[1]))
             self.plan.append(coord)
