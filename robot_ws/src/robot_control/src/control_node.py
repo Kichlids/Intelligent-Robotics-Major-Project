@@ -22,7 +22,7 @@ LINEAR_SPEED_DEFAULT = 0.25
 # Rotation speed rad ft/s 
 ANGULAR_SPEED_DEFAULT = 0.25
 
-linear_speed_fast = 1
+linear_speed_fast = 1.5
 
 # Obstacle avoidance threshold in ft, including the position of the laser scan sensor
 LASER_AVOIDANCE_DISTANCE = 0.5#1.5
@@ -491,6 +491,7 @@ class Navigation():
         # Assuming robot faces forward (+y direction) at 0,0 initially
         while self.waypoint_index < len(waypoints):
             current_node = node_path[self.waypoint_index]
+            print('current node: ' + current_node)
 
             print('Heading to ' + waypoints[self.waypoint_index].to_string())
             #print('From ' + my_location.to_string())
@@ -507,10 +508,11 @@ class Navigation():
             self.waypoint_index += 1
             self.min_dist_to_dest = float('inf')
             
-            print(current_node)
+
             rospy.sleep(1)
         
         print('Finished')
+        print('current node: ' + current_node)
         #print(my_location.to_string())
 
 def choice_callback(data):
