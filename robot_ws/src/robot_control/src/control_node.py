@@ -247,7 +247,9 @@ class Plan():
         
         # list of important nodes (just the names)
         # TODO: change the names of the nodes to the corresponding location
-        self.imp_nodes = ['Devon_Atrium', 'Practice_Bay', 'Computer_Lab', 'Electronics_lab', 'CS/ECE_Office']
+        #self.imp_nodes = ['Devon_Atrium', 'Practice_Bay', 'Computer_Lab', 'Electronics_lab', 'CS/ECE_Office']
+        self.imp_nodes = ['Node2', 'Node3', 'Node10', 'Node11', 'Node17', 'Node20']
+
 
         self.graph.connect('Node1', 'Node2', 5)
         self.graph.connect('Node2', 'Node3', 2.5)
@@ -283,9 +285,12 @@ class Plan():
     def plan_route(self, first_node, second_node):
         global node_path
         global destination_node
+        node_path = []
+        #node_path.append(current_node)
 
         path, dist = self.astar.astar(current_node, first_node)
         for node in path:
+            node_path.append(node)
             coord = Coord(self.support.meters_to_feet(self.nodes.get(node)[0]), self.support.meters_to_feet(self.nodes.get(node)[1]))
             self.plan.append(coord)
         # Remove duplicate nodes (first node)
@@ -293,33 +298,37 @@ class Plan():
 
         path, dist = self.astar.astar(first_node, second_node)
         for node in path:
+            node_path.append(node)
             coord = Coord(self.support.meters_to_feet(self.nodes.get(node)[0]), self.support.meters_to_feet(self.nodes.get(node)[1]))
             self.plan.append(coord)
         
         destination_node = second_node
-        path.insert(0, current_node)
         # Remove duplicate nodes (first node)
         self.plan.pop(num)
-        node_path = path
+        node_path.pop(num)
+
+        print('NODE PATH:')
+        for node in node_path:
+            print(node)
         
         # once done traverse the master path
         return self.plan
         
-        
-        
-    
     def tour(self, first_node):
             
         path, dist = self.astar.astar(current_node, first_node)
         # add coordinates to the master plan
         for node in path:
+            node_path.append(node)
             coord = Coord(self.support.meters_to_feet(self.nodes.get(node)[0]), self.support.meters_to_feet(self.nodes.get(node)[1]))
             self.plan.append(coord)
         
-        path, dist = self.astar.find_tour_path(first_node, self.important_nodes)
+        path, dist = self.astar.find_tour_path(first_node, self.imp_nodes)
         for node in path:
+            node_path.append(node)
             coord = Coord(self.support.meters_to_feet(self.nodes.get(node)[0]), self.support.meters_to_feet(self.nodes.get(node)[1]))
             self.plan.append(coord)
+        
         
         return self.plan
             
@@ -375,8 +384,6 @@ class Navigation():
                 angle = -90
         else:
             angle = math.degrees(math.atan2(delta_x, delta_y))
-        
-        print(angle - yaw)
 
         angle_to_turn = angle - yaw
         if angle_to_turn < -180:
@@ -484,8 +491,11 @@ class Navigation():
     def navigate(self, waypoints):
         global my_location
         global current_node
+        global node_path
 
+        print('node path:')
         print(node_path)
+        print('waypoit length')
         print(len(waypoints))
 
         # Assuming robot faces forward (+y direction) at 0,0 initially
@@ -513,6 +523,7 @@ class Navigation():
         
         print('Finished')
         print('current node: ' + current_node)
+        node_path = []
         #print(my_location.to_string())
 
 def choice_callback(data):
@@ -536,7 +547,8 @@ def choice_callback(data):
     #navigator.navigate(waypoints)
 
 
-    waypoints = planner.plan_route('Node4', 'Node1')
+    waypoints = planner.plan_route('Node11', 'Node13')
+    #waypoints = planner.tour('Node5')
     for i in range(len(waypoints)):
         print(waypoints[i].to_string())
     navigator.navigate(waypoints)

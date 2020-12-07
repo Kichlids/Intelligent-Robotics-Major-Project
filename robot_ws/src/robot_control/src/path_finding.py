@@ -178,9 +178,9 @@ class Astar:
                     min_cost = dist
                     temp_path = path
                     target_node = node
-                    print(temp_path)
-                    print(min_cost)
-            # add the path to important node with the least distance
+                    #print(temp_path)
+                    #print(min_cost)
+            # add the path to important node with the least distance 
             tour_path = tour_path + temp_path
             tour_path.pop()
             current_node = target_node
@@ -196,8 +196,8 @@ class Astar:
         tour_path = tour_path + path
         total_dist = total_dist + dist
         
-        print('ok')
         return tour_path, total_dist
+
 
 nodes = {}
 nodes['Node1'] = [6, 2]
@@ -221,7 +221,8 @@ nodes['Node18'] = [28, 21]
 nodes['Node19'] = [31.5, 27.5]
 nodes['Node20'] = [31.5, 32.5]
 
-important_nodes = ['Node20', 'Node1']
+important_nodes = ['Node2', 'Node3', 'Node10', 'Node11', 'Node17', 'Node20']
+
 
 graph = Graph()
 graph.connect('Node1', 'Node2', 5)
@@ -252,6 +253,6 @@ graph.make_undirected()
 astar = Astar(nodes, graph)
 
 #Run the search algorithm
-path, dist = astar.find_tour_path('Node9', important_nodes)
+path, dist = astar.find_tour_path('Node5', important_nodes)
 print(path)
 print(dist)
