@@ -85,10 +85,10 @@
       <wall_time>1607313048 817575339</wall_time>
       <iterations>128652</iterations>
       <model name='Devon_REPF_Final_01'>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose frame=''>0 0 -0.04 0 -0 0</pose>
         <scale>1 1 1</scale>
         <link name='link_0'>
-          <pose frame=''>-0.010854 0.009025 0 0 -0 0</pose>
+          <pose frame=''>0 0 0 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
@@ -117,7 +117,7 @@
     </gui>
     <model name='Devon_REPF_Final_01'>
       <link name='link_0'>
-        <pose frame=''>-0.010854 0.009025 0 0 -0 0</pose>
+        <pose frame=''>0 0 -0.04 0 -0 0</pose>
         <inertial>
           <mass>1</mass>
           <inertia>
@@ -208,7 +208,7 @@
       </link>
       <static>1</static>
       <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>0 0 0 0 -0 0</pose>
+      <pose frame=''>0 0 -0.04 0 -0 0</pose>
     </model>
   </world>
 </sdf>
