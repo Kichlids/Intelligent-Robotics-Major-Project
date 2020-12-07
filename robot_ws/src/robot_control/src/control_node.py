@@ -20,7 +20,7 @@ from tf.transformations import euler_from_quaternion
 # Speed ft/s
 LINEAR_SPEED_DEFAULT = 0.25
 # Rotation speed rad ft/s 
-ANGULAR_SPEED_DEFAULT = 0.1
+ANGULAR_SPEED_DEFAULT = 0.25
 
 linear_speed_fast = 1
 
@@ -139,6 +139,7 @@ class Laser():
         #if math.isnan(min_val) or min_val < LASER_AVOIDANCE_DISTANCE:
         if min_val < LASER_AVOIDANCE_DISTANCE:
             self.obstacle_detected = True
+            print(self.obstacle_detected)
             
             self.laser_data = data
             self.laser_min_index = min_index
@@ -356,7 +357,7 @@ class Navigation():
             if delta_y > 0:
                 angle = 0
             elif delta_y < 0:
-                angle = 180
+                angle = -180
         elif delta_y == 0:
             # Target to the left or right of us
             if delta_x > 0:
@@ -366,7 +367,15 @@ class Navigation():
         else:
             angle = math.degrees(math.atan2(delta_x, delta_y))
         
-        return angle - yaw
+        print(angle - yaw)
+
+        angle_to_turn = angle - yaw
+        if angle_to_turn < -180:
+            angle_to_turn += 360
+        elif angle_to_turn > 180:
+            angle_to_turn -= 360
+
+        return angle_to_turn
 
     # Turns towards target pos
     def rotate_to_angle(self, waypoints):
