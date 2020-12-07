@@ -22,7 +22,7 @@ LINEAR_SPEED_DEFAULT = 0.25
 # Rotation speed rad ft/s 
 ANGULAR_SPEED_DEFAULT = 0.25
 
-linear_speed_fast = 1.5
+linear_speed_fast = 2
 
 # Obstacle avoidance threshold in ft, including the position of the laser scan sensor
 LASER_AVOIDANCE_DISTANCE = 0.5#1.5
@@ -239,10 +239,10 @@ class Plan():
         # REPF entrance
         self.nodes['Node17'] = [28, 21]
         # REPF lobby
-        self.nodes['Node18'] = [28, 23]
-        self.nodes['Node19'] = [31.5, 23]
+        self.nodes['Node18'] = [28, 26]
+        self.nodes['Node19'] = [30, 26]
         # practice bay
-        self.nodes['Node20'] = [31.5, 33]
+        self.nodes['Node20'] = [30, 36]
 
         
         # list of important nodes (just the names)
@@ -547,7 +547,7 @@ def choice_callback(data):
     #navigator.navigate(waypoints)
 
 
-    waypoints = planner.plan_route('Node8', 'Node16')
+    waypoints = planner.plan_route('Node8', 'Node20')
     #waypoints = planner.tour('Node3')
     for i in range(len(waypoints)):
         print(waypoints[i].to_string())
