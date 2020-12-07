@@ -240,9 +240,9 @@ class Plan():
         self.nodes['Node17'] = [28, 21]
         # REPF lobby
         self.nodes['Node18'] = [28, 26]
-        self.nodes['Node19'] = [30, 26]
+        self.nodes['Node19'] = [31.5, 26]
         # practice bay
-        self.nodes['Node20'] = [30, 36]
+        self.nodes['Node20'] = [31.5, 36]
 
         
         # list of important nodes (just the names)
