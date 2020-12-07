@@ -547,8 +547,8 @@ def choice_callback(data):
     #navigator.navigate(waypoints)
 
 
-    waypoints = planner.plan_route('Node11', 'Node13')
-    #waypoints = planner.tour('Node5')
+    waypoints = planner.plan_route('Node8', 'Node16')
+    #waypoints = planner.tour('Node3')
     for i in range(len(waypoints)):
         print(waypoints[i].to_string())
     navigator.navigate(waypoints)
