@@ -18,9 +18,11 @@ from std_msgs.msg import Int32
 from tf.transformations import euler_from_quaternion
 
 # Speed ft/s
-LINEAR_SPEED_DEFAULT = 3
+LINEAR_SPEED_DEFAULT = 0.25
 # Rotation speed rad ft/s 
 ANGULAR_SPEED_DEFAULT = 0.1
+
+linear_speed_fast = 1
 
 # Obstacle avoidance threshold in ft, including the position of the laser scan sensor
 LASER_AVOIDANCE_DISTANCE = 2.3
@@ -31,6 +33,8 @@ abandon this waypoint (and its destination if applicable)
 and move on to next waypoint
 '''
 NAV_FAILURE_DISTANCE_THRESHOLD = 2
+
+dist_diff_threshold = 0.1
 
 
 
@@ -205,14 +209,14 @@ class Plan():
         # list of all nodes (coord in meters!)
         self.nodes = {}
         # CS/ECE office
-        self.nodes['Node1'] = [6, 2]
-        self.nodes['Node2'] = [6, 7]
+        self.nodes['Node1'] = [6, 3]
+        self.nodes['Node2'] = [6, 8]
         # electronics lab
-        self.nodes['Node3'] = [8.5, 7]
+        self.nodes['Node3'] = [8.5, 8]
         # devon atrium
-        self.nodes['Node4'] = [11, 7]
+        self.nodes['Node4'] = [11, 8]
         self.nodes['Node5'] = [11, 1]
-        self.nodes['Node6'] = [18, 0]
+        self.nodes['Node6'] = [18, 1]
         self.nodes['Node7'] = [18, 4]
         self.nodes['Node8'] = [24, 4]
         self.nodes['Node9'] = [6, 30]
@@ -270,13 +274,6 @@ class Plan():
         global node_path
         global destination_node
 
-        # if first_node not in self.nodes.keys:
-        #     print('Location not found')
-        #     # return something?
-        # if second_node not in self.nodes.keys:
-        #     print('Location not found')
-        #     # return something?
-
         path, dist = self.astar.astar(current_node, first_node)
         for node in path:
             coord = Coord(self.support.meters_to_feet(self.nodes.get(node)[0]), self.support.meters_to_feet(self.nodes.get(node)[1]))
@@ -302,19 +299,16 @@ class Plan():
         
     
     def tour(self, first_node):
-        # if first_node not in self.nodes.keys:
-        #     print('Location not found')
-        #     # return something?
             
         path, dist = self.astar.astar(current_node, first_node)
         # add coordinates to the master plan
         for node in path:
-            coord = Coord(self.nodes.get(node)[0], self.nodes.get(node)[1])
+            coord = Coord(self.support.meters_to_feet(self.nodes.get(node)[0]), self.support.meters_to_feet(self.nodes.get(node)[1]))
             self.plan.append(coord)
         
         path = self.astar.find_tour_path(first_node, self.important_nodes)
         for node in path:
-            coord = Coord(self.nodes.get(node)[0], self.nodes.get(node)[1])
+            coord = Coord(self.support.meters_to_feet(self.nodes.get(node)[0]), self.support.meters_to_feet(self.nodes.get(node)[1]))
             self.plan.append(coord)
         
         return self.plan
@@ -413,13 +407,13 @@ class Navigation():
             self.velocity_pub.publish(turn_msg)
 
     # Move in increments and turn
-    def move_dist(self, waypoints):
+    def move_dist(self, waypoints):  # BOTH IN FT
         dist_diff = self.support.calculate_distance(my_location, waypoints[self.waypoint_index])
         
         if dist_diff < self.min_dist_to_dest:
             self.min_dist_to_dest = dist_diff
         
-        while dist_diff > 1:
+        while dist_diff > dist_diff_threshold:
             
             if self.laser.obstacle_detected:
                 # Avoid obstacle if detected
@@ -444,10 +438,14 @@ class Navigation():
             
             rospy.sleep(1)
 
+            speed = LINEAR_SPEED_DEFAULT
+            if dist_diff > 2:
+                speed = linear_speed_fast
+
             if not self.laser.obstacle_detected:
                 # Move forward
                 vel_msg = Twist()
-                vel_msg.linear.x = self.support.feet_to_meters(LINEAR_SPEED_DEFAULT)
+                vel_msg.linear.x = self.support.feet_to_meters(speed)
                 self.velocity_pub.publish(vel_msg)
                 rospy.sleep(0.5)
             
@@ -518,7 +516,7 @@ def choice_callback(data):
     #navigator.navigate(waypoints)
 
 
-    waypoints = planner.plan_route('Node4', 'Node11')
+    waypoints = planner.plan_route('Node4', 'Node1')
     for i in range(len(waypoints)):
         print(waypoints[i].to_string())
     navigator.navigate(waypoints)
