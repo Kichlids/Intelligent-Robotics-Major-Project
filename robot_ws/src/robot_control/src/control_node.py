@@ -25,7 +25,7 @@ ANGULAR_SPEED_DEFAULT = 0.1
 linear_speed_fast = 1
 
 # Obstacle avoidance threshold in ft, including the position of the laser scan sensor
-LASER_AVOIDANCE_DISTANCE = 2.3
+LASER_AVOIDANCE_DISTANCE = 0.5#1.5
 
 '''
 If robot moves away this much distance (ft),
@@ -299,12 +299,6 @@ class Plan():
         
     
     def tour(self, first_node):
-<<<<<<< HEAD
-=======
-        # if first_node not in self.nodes.keys:
-        #     print('Location not found')
-        #    # return something?
->>>>>>> 55102904cb84f6d81ceee74787e11ca3a183c451
             
         path, dist = self.astar.astar(current_node, first_node)
         # add coordinates to the master plan
