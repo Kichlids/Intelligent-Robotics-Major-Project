@@ -213,26 +213,35 @@ class Plan():
         self.nodes['Node2'] = [6, 8]
         # electronics lab
         self.nodes['Node3'] = [8.5, 8]
-        # devon atrium
+        # devon west atrium
         self.nodes['Node4'] = [11, 8]
+        # devon west entrance
         self.nodes['Node5'] = [11, 1]
+        # west sidewalks
         self.nodes['Node6'] = [18, 1]
-        self.nodes['Node7'] = [18, 4]
-        self.nodes['Node8'] = [24, 4]
-        self.nodes['Node9'] = [6, 30]
+        self.nodes['Node7'] = [18, 5]
+        self.nodes['Node8'] = [24, 5]
+        # devon north-east corner
+        self.nodes['Node9'] = [6, 31]
         # computer lab
-        self.nodes['Node10'] = [8.5, 30]
-        self.nodes['Node11'] = [11, 30]
-        self.nodes['Node12'] = [11, 37]
-        self.nodes['Node13'] = [18, 37]
-        self.nodes['Node14'] = [18, 32]
-        self.nodes['Node15'] = [24, 32]
-        self.nodes['Node16'] = [24, 18]
-        self.nodes['Node17'] = [28, 18]
+        self.nodes['Node10'] = [8.5, 31]
+        # devon east atrium
+        self.nodes['Node11'] = [11, 31]
+        # devon east entrance
+        self.nodes['Node12'] = [11, 38]
+        # east sidewalks
+        self.nodes['Node13'] = [18, 38]
+        self.nodes['Node14'] = [18, 33]
+        self.nodes['Node15'] = [24, 33]
+        # REPF sidewalk
+        self.nodes['Node16'] = [24, 19]
+        # REPF entrance
+        self.nodes['Node17'] = [28, 19]
+        # REPF lobby
         self.nodes['Node18'] = [28, 21]
-        self.nodes['Node19'] = [31.5, 27.5]
+        self.nodes['Node19'] = [31.5, 21]
         # practice bay
-        self.nodes['Node20'] = [31.5, 32.5]
+        self.nodes['Node20'] = [31.5, 31]
 
         
         # list of important nodes (just the names)
@@ -252,8 +261,8 @@ class Plan():
         self.graph.connect('Node8', 'Node16', 14)
         self.graph.connect('Node16', 'Node17', 4)
         self.graph.connect('Node17', 'Node18', 3)
-        self.graph.connect('Node18', 'Node19', 7.38)
-        self.graph.connect('Node19', 'Node20', 5)
+        self.graph.connect('Node18', 'Node19', 3.5)
+        self.graph.connect('Node19', 'Node20', 10)
         self.graph.connect('Node9', 'Node10', 2.5)
         self.graph.connect('Node10', 'Node11', 2.5)
         self.graph.connect('Node11', 'Node12', 7)
