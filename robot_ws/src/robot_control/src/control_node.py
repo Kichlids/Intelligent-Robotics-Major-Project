@@ -18,7 +18,7 @@ from std_msgs.msg import Int32
 from tf.transformations import euler_from_quaternion
 
 # Speed ft/s
-LINEAR_SPEED_DEFAULT = 0.5
+LINEAR_SPEED_DEFAULT = 3
 # Rotation speed rad ft/s 
 ANGULAR_SPEED_DEFAULT = 0.1
 
@@ -65,8 +65,10 @@ class Odom():
         global my_location
         global yaw
 
-        y = self.support.meters_to_feet(round(data.pose.pose.position.x, 2))
-        x = self.support.meters_to_feet(round(-data.pose.pose.position.y, 2))
+        y = self.support.meters_to_feet(round(data.pose.pose.position.x, 2) + 1)
+        x = self.support.meters_to_feet(round(-data.pose.pose.position.y, 2) + 11)
+
+        #print(str(x) + ', ' + str(y))
 
         my_location = Coord(x, y)
 
@@ -130,7 +132,8 @@ class Laser():
         range_max is about 30ft. It is impossible to get reading of 30ft+ given our environment
         So the only other possible outcome is if distance read (nan) is below range_min, or threshold
         '''
-        if math.isnan(min_val) or min_val < LASER_AVOIDANCE_DISTANCE:
+        #if math.isnan(min_val) or min_val < LASER_AVOIDANCE_DISTANCE:
+        if min_val < LASER_AVOIDANCE_DISTANCE:
             self.obstacle_detected = True
             
             self.laser_data = data
@@ -198,9 +201,8 @@ class Plan():
     def __init__(self):
         self.support = Support()
         self.graph = Graph()
-        # needs to update        
-        #self.current_node = 'Node1'
-        # list of all nodes
+
+        # list of all nodes (coord in meters!)
         self.nodes = {}
         # CS/ECE office
         self.nodes['Node1'] = [6, 2]
@@ -209,7 +211,7 @@ class Plan():
         self.nodes['Node3'] = [8.5, 7]
         # devon atrium
         self.nodes['Node4'] = [11, 7]
-        self.nodes['Node5'] = [11, 0]
+        self.nodes['Node5'] = [11, 1]
         self.nodes['Node6'] = [18, 0]
         self.nodes['Node7'] = [18, 4]
         self.nodes['Node8'] = [24, 4]
@@ -237,9 +239,9 @@ class Plan():
         self.graph.connect('Node2', 'Node3', 2.5)
         self.graph.connect('Node2', 'Node9', 23)
         self.graph.connect('Node3', 'Node4', 2.5)
-        self.graph.connect('Node4', 'Node5', 7)
+        self.graph.connect('Node4', 'Node5', 6)
         self.graph.connect('Node4', 'Node11', 23)
-        self.graph.connect('Node5', 'Node6', 7)
+        self.graph.connect('Node5', 'Node6', 7) # close enough
         self.graph.connect('Node6', 'Node7', 4)
         self.graph.connect('Node7', 'Node8', 6)
         self.graph.connect('Node7', 'Node14', 28)
@@ -268,28 +270,29 @@ class Plan():
         global node_path
         global destination_node
 
-        if first_node not in self.nodes.keys:
-            print('Location not found')
-            # return something?
-        if second_node not in self.nodes.keys:
-            print('Location not found')
-            # return something?
+        # if first_node not in self.nodes.keys:
+        #     print('Location not found')
+        #     # return something?
+        # if second_node not in self.nodes.keys:
+        #     print('Location not found')
+        #     # return something?
 
         path, dist = self.astar.astar(current_node, first_node)
         for node in path:
-            coord = Coord()
-            coord.x = self.nodes.get(node)[0]
-            coord.y = self.nodes.getInode)[1]
+            coord = Coord(self.support.meters_to_feet(self.nodes.get(node)[0]), self.support.meters_to_feet(self.nodes.get(node)[1]))
             self.plan.append(coord)
+        # Remove duplicate nodes (first node)
+        num = len(self.plan)
 
         path, dist = self.astar.astar(first_node, second_node)
         for node in path:
-            coord = Coord()
-            coord.x = self.nodes.get(node)[0]
-            coord.y = self.nodes.getInode)[1]
+            coord = Coord(self.support.meters_to_feet(self.nodes.get(node)[0]), self.support.meters_to_feet(self.nodes.get(node)[1]))
             self.plan.append(coord)
         
         destination_node = second_node
+        path.insert(0, current_node)
+        # Remove duplicate nodes (first node)
+        self.plan.pop(num)
         node_path = path
         
         # once done traverse the master path
@@ -299,23 +302,19 @@ class Plan():
         
     
     def tour(self, first_node):
-        if first_node not in self.nodes.keys:
-            print('Location not found')
-            # return something?
+        # if first_node not in self.nodes.keys:
+        #     print('Location not found')
+        #     # return something?
             
         path, dist = self.astar.astar(current_node, first_node)
         # add coordinates to the master plan
         for node in path:
-            coord = Coord()
-            coord.x = self.nodes.get(node)[0]
-            coord.y = self.nodes.getInode)[1]
+            coord = Coord(self.nodes.get(node)[0], self.nodes.get(node)[1])
             self.plan.append(coord)
         
         path = self.astar.find_tour_path(first_node, self.important_nodes)
         for node in path:
-            coord = Coord()
-            coord.x = self.nodes.get(node)[o]
-            coord.y = self.nodes.get(node)[1]
+            coord = Coord(self.nodes.get(node)[0], self.nodes.get(node)[1])
             self.plan.append(coord)
         
         return self.plan
@@ -346,7 +345,8 @@ class Navigation():
         self.min_dist_to_dest = float('inf')
 
         self.velocity_pub = rospy.Publisher('/cmd_vel_mux/input/navi', Twist, queue_size = 10)
-         
+
+
     #Return angle of rotation in degrees
     def get_rotation_angle(self, destination):
         global my_location
@@ -399,7 +399,6 @@ class Navigation():
             t1 = rospy.Time.now().to_sec()
             current_angle = math.degrees(ANGULAR_SPEED_DEFAULT) * (t1 - t0)  
 
-    
     def avoid(self):
 
         turn_msg = Twist()
@@ -470,8 +469,13 @@ class Navigation():
         global my_location
         global current_node
 
+        print(node_path)
+        print(len(waypoints))
+
         # Assuming robot faces forward (+y direction) at 0,0 initially
         while self.waypoint_index < len(waypoints):
+            current_node = node_path[self.waypoint_index]
+
             print('Heading to ' + waypoints[self.waypoint_index].to_string())
             #print('From ' + my_location.to_string())
             rospy.sleep(1)
@@ -486,7 +490,8 @@ class Navigation():
 
             self.waypoint_index += 1
             self.min_dist_to_dest = float('inf')
-            current_node = node_path[self.waypoint_index]
+            
+            print(current_node)
             rospy.sleep(1)
         
         print('Finished')
@@ -503,13 +508,19 @@ def choice_callback(data):
     navigator = Navigation(laser)
 
     
-    points = [[Coord(0, 0), Coord(-5, -5)]]
+    #points = [[Coord(0, 0), Coord(-5, -5)]]
     
     # pass in a list of coords to plan route
-    waypoints = planner.plan_route(points)
+    # waypoints = planner.plan_route(points)
+    # for i in range(len(waypoints)):
+    #     print(waypoints[i].to_string())
+
+    #navigator.navigate(waypoints)
+
+
+    waypoints = planner.plan_route('Node4', 'Node11')
     for i in range(len(waypoints)):
         print(waypoints[i].to_string())
-
     navigator.navigate(waypoints)
 
     # if data == 1:
@@ -552,6 +563,7 @@ def init_control_node():
     global busy_bool 
     busy_bool = Bool()
     busy_bool.data = False
+
 
     # First time
     global busy_pub
