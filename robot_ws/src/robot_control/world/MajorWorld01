@@ -181,7 +181,7 @@
       <wall_time>1607225387 79413886</wall_time>
       <iterations>133476</iterations>
       <model name='Dev_REPF_Col_02'>
-        <pose frame=''>0 0 0.1 0 -0 0</pose>
+        <pose frame=''>0 0 0.01 0 -0 0</pose>
         <scale>1 1 1</scale>
         <link name='link_0'>
           <pose frame=''>0 0 0.1 0 -0 0</pose>
