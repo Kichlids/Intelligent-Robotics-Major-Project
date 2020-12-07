@@ -304,7 +304,7 @@ class Plan():
     def tour(self, first_node):
         # if first_node not in self.nodes.keys:
         #     print('Location not found')
-        #     # return something?
+        #    # return something?
             
         path, dist = self.astar.astar(current_node, first_node)
         # add coordinates to the master plan
@@ -312,7 +312,7 @@ class Plan():
             coord = Coord(self.nodes.get(node)[0], self.nodes.get(node)[1])
             self.plan.append(coord)
         
-        path = self.astar.find_tour_path(first_node, self.important_nodes)
+        path, dist = self.astar.find_tour_path(first_node, self.important_nodes)
         for node in path:
             coord = Coord(self.nodes.get(node)[0], self.nodes.get(node)[1])
             self.plan.append(coord)
