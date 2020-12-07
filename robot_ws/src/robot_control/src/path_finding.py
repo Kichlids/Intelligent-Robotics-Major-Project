@@ -88,9 +88,7 @@ class Astar:
 
             dist = ((x1 - x0) ** 2 + (y1 - y0) ** 2) ** 0.5
 
-            self.heuristics[node_name] = dist
-                
-                
+            self.heuristics[node_name] = dist     
 
     # A* search
     def astar_search(self, start, end):
@@ -119,13 +117,11 @@ class Astar:
             if current_node == goal_node:
                 path = []
                 while current_node != start_node:
-                    # path.append(current_node.name + ': ' + str(current_node.g))
-                    path.append(current_node.name)
+                    path.append([current_node.name, current_node.g])
                     current_node = current_node.parent
-                # path.append(start_node.name + ': ' + str(start_node.g))
-                path.append(start_node.name)
+                path.append([current_node.name, current_node.g])
                 # Return reversed path
-                return path[::-1]
+                return path[::-1], path[0][1]
             # Get neighbours
             neighbors = self.graph.get(current_node.name)
             # Loop neighbors
@@ -153,29 +149,72 @@ class Astar:
             if (neighbor == node and neighbor.f > node.f):
                 return False
         return True
+    
+    # A* search but returns path and distance
+    def astar(self, start, end):
+        path, dist = self.astar_search(start, end)
+        pure_path = []
+        for i in range(len(path)):
+            pure_path.append(path[i][0])
+        
+        return pure_path, dist
 
 
-# graph = Graph()
+    def find_tour_path(self, start, important_nodes):
+        # return tour path
+        print('ok')
 
-# nodes = {}
-# nodes['Node1'] = [0, 0]
-# nodes['Node2'] = [0, 10]
-# nodes['Node3'] = [20, 10]
-# nodes['Node4'] = [5, 0]
-# nodes['Node5'] = [5, 5]
-# nodes['Node6'] = [20, 5]
+nodes = {}
+nodes['Node1'] = [6, 2]
+nodes['Node2'] = [6, 7]
+nodes['Node3'] = [8.5, 7]
+nodes['Node4'] = [11, 7]
+nodes['Node5'] = [11, 0]
+nodes['Node6'] = [18, 0]
+nodes['Node7'] = [18, 4]
+nodes['Node8'] = [24, 4]
+nodes['Node9'] = [6, 30]
+nodes['Node10'] = [8.5, 30]
+nodes['Node11'] = [11, 30]
+nodes['Node12'] = [11, 37]
+nodes['Node13'] = [18, 37]
+nodes['Node14'] = [18, 32]
+nodes['Node15'] = [24, 32]
+nodes['Node16'] = [24, 18]
+nodes['Node17'] = [28, 18]
+nodes['Node18'] = [28, 21]
+nodes['Node19'] = [31.5, 27.5]
+nodes['Node20'] = [31.5, 32.5]
 
-# graph.connect('Node1', 'Node2', 10)
-# graph.connect('Node1', 'Node4', 5)
-# graph.connect('Node2', 'Node3', 20)
-# graph.connect('Node4', 'Node5', 5)
-# graph.connect('Node5', 'Node6', 15)
-# graph.connect('Node3', 'Node6', 5)
-# graph.make_undirected()
+graph = Graph()
+graph.connect('Node1', 'Node2', 5)
+graph.connect('Node2', 'Node3', 2.5)
+graph.connect('Node2', 'Node9', 23)
+graph.connect('Node3', 'Node4', 2.5)
+graph.connect('Node4', 'Node5', 7)
+graph.connect('Node4', 'Node11', 23)
+graph.connect('Node5', 'Node6', 7)
+graph.connect('Node6', 'Node7', 4)
+graph.connect('Node7', 'Node8', 6)
+graph.connect('Node7', 'Node14', 28)
+graph.connect('Node8', 'Node16', 14)
+graph.connect('Node16', 'Node17', 4)
+graph.connect('Node17', 'Node18', 3)
+graph.connect('Node18', 'Node19', 7.38)
+graph.connect('Node19', 'Node20', 5)
+graph.connect('Node9', 'Node10', 2.5)
+graph.connect('Node10', 'Node11', 2.5)
+graph.connect('Node11', 'Node12', 7)
+graph.connect('Node12', 'Node13', 7)
+graph.connect('Node13', 'Node14', 5)
+graph.connect('Node14', 'Node15', 6)
+graph.connect('Node15', 'Node16', 14)
+graph.make_undirected()
 
 
-# astar = Astar(nodes, graph)
+astar = Astar(nodes, graph)
 
-# Run the search algorithm
-# path = astar.astar_search('Node2', 'Node4')
-# print(path)
+#Run the search algorithm
+path, dist = astar.astar('Node9', 'Node20')
+print(path)
+print(dist)

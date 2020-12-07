@@ -45,8 +45,14 @@ class Coord():
 
 
 my_location = Coord(0, 0)
+current_node = 'Node5'
+destination_node = ''
+node_path = []
+
 yaw = 0.0
 waypoints = []
+
+
 
 
 class Odom():
@@ -133,92 +139,129 @@ class Laser():
         else:
             self.obstacle_detected = False
 
+'''
 # TODO: Replace Plan() with PlanAStar or such
-# class Plan():
-    # def __init__(self):
-        # self.support = Support()
+class Plan():
+    def __init__(self):
+        self.support = Support()
 
-    # def plan_route(self, list_set):
-        # global my_location
+    def plan_route(self, list_set):
+        global my_location
 
-        # coord_pairs = list_set
+        coord_pairs = list_set
 
-        # waypoints = []
+        waypoints = []
         
-        # start = my_location        
+        start = my_location        
         
-        # min_dist = float('inf')
-        # min_index = -1
+        min_dist = float('inf')
+        min_index = -1
         
-        # for i in range(len(coord_pairs)):
+        for i in range(len(coord_pairs)):
 
-            # dist = self.support.calculate_distance(start, coord_pairs[i][0])
-            # if dist < min_dist:
-                # min_dist = dist
-                # min_index = i
+            dist = self.support.calculate_distance(start, coord_pairs[i][0])
+            if dist < min_dist:
+                min_dist = dist
+                min_index = i
 
-        # waypoints.append(coord_pairs[min_index][0])
-        # waypoints.append(coord_pairs[min_index][1])
+        waypoints.append(coord_pairs[min_index][0])
+        waypoints.append(coord_pairs[min_index][1])
 
-        # start = coord_pairs[min_index][1]
-        # coord_pairs.pop(min_index)
+        start = coord_pairs[min_index][1]
+        coord_pairs.pop(min_index)
 
-        # while len(coord_pairs) > 0:
+        while len(coord_pairs) > 0:
 
-            # min_dist = float('inf')
-            # min_index = -1
+            min_dist = float('inf')
+            min_index = -1
 
-            # for i in range(len(coord_pairs)):
-                # dist = self.support.calculate_distance(start, coord_pairs[i][0])
-                # if dist < min_dist:
-                    # min_dist = dist
-                    # min_index = i
+            for i in range(len(coord_pairs)):
+                dist = self.support.calculate_distance(start, coord_pairs[i][0])
+                if dist < min_dist:
+                    min_dist = dist
+                    min_index = i
             
-            # waypoints.append(coord_pairs[min_index][0])
-            # waypoints.append(coord_pairs[min_index][1])
+            waypoints.append(coord_pairs[min_index][0])
+            waypoints.append(coord_pairs[min_index][1])
             
-            # start = coord_pairs[min_index][1]
-            # coord_pairs.pop(min_index)
+            start = coord_pairs[min_index][1]
+            coord_pairs.pop(min_index)
 
-        # for i in range(len(waypoints)):
-            # waypoints[i].to_string()
+        for i in range(len(waypoints)):
+            waypoints[i].to_string()
 
-        # return waypoints
+        return waypoints
+'''
+
 
 class Plan():
     def __init__(self):
         self.support = Support()
         self.graph = Graph()
         # needs to update        
-        self.current_node = 'Node1'
+        #self.current_node = 'Node1'
         # list of all nodes
         self.nodes = {}
-        self.nodes['Node1'] = [0, 0]
-        self.nodes['Node2'] = [0, 10]
-        self.nodes['Node3'] = [20, 10]
-        self.nodes['Node4'] = [5, 0]
-        self.nodes['Node5'] = [5, 5]
-        self.nodes['Node6'] = [20, 5]
+        self.nodes['Node1'] = [6, 2]
+        self.nodes['Node2'] = [6, 7]
+        self.nodes['Node3'] = [8.5, 7]
+        self.nodes['Node4'] = [11, 7]
+        self.nodes['Node5'] = [11, 0]
+        self.nodes['Node6'] = [18, 0]
+        self.nodes['Node7'] = [18, 4]
+        self.nodes['Node8'] = [24, 4]
+        self.nodes['Node9'] = [6, 30]
+        self.nodes['Node10'] = [8.5, 30]
+        self.nodes['Node11'] = [11, 30]
+        self.nodes['Node12'] = [11, 37]
+        self.nodes['Node13'] = [18, 37]
+        self.nodes['Node14'] = [18, 32]
+        self.nodes['Node15'] = [24, 32]
+        self.nodes['Node16'] = [24, 18]
+        self.nodes['Node17'] = [28, 18]
+        self.nodes['Node18'] = [28, 21]
+        self.nodes['Node19'] = [31.5, 27.5]
+        self.nodes['Node20'] = [31.5, 32.5]
+
         
         # list of important nodes (just the names)
         self.imp_nodes = ['Node3', 'Node5']
-        
-        self.graph.connect('Node1', 'Node2', 10)
-        self.graph.connect('Node1', 'Node4', 5)
-        self.graph.connect('Node2', 'Node3', 20)
-        self.graph.connect('Node4', 'Node5', 5)
-        self.graph.connect('Node5', 'Node6', 15)
-        self.graph.connect('Node3', 'Node6', 5)
+
+        self.graph.connect('Node1', 'Node2', 5)
+        self.graph.connect('Node2', 'Node3', 2.5)
+        self.graph.connect('Node2', 'Node9', 23)
+        self.graph.connect('Node3', 'Node4', 2.5)
+        self.graph.connect('Node4', 'Node5', 7)
+        self.graph.connect('Node4', 'Node11', 23)
+        self.graph.connect('Node5', 'Node6', 7)
+        self.graph.connect('Node6', 'Node7', 4)
+        self.graph.connect('Node7', 'Node8', 6)
+        self.graph.connect('Node7', 'Node14', 28)
+        self.graph.connect('Node8', 'Node16', 14)
+        self.graph.connect('Node16', 'Node17', 4)
+        self.graph.connect('Node17', 'Node18', 3)
+        self.graph.connect('Node18', 'Node19', 7.38)
+        self.graph.connect('Node19', 'Node20', 5)
+        self.graph.connect('Node9', 'Node10', 2.5)
+        self.graph.connect('Node10', 'Node11', 2.5)
+        self.graph.connect('Node11', 'Node12', 7)
+        self.graph.connect('Node12', 'Node13', 7)
+        self.graph.connect('Node13', 'Node14', 5)
+        self.graph.connect('Node14', 'Node15', 6)
+        self.graph.connect('Node15', 'Node16', 14)
+
         self.graph.make_undirected()
         
-        self.astar = Astar(nodes, self.graph)
-        self.astar.compute_heuristics('Node6')
+        self.astar = Astar(self.nodes, self.graph)
         
         self.plan = []
     
     # function for guidance from point A to point B
     # assuming the arguments are the names of the nodes
     def plan_route(self, first_node, second_node):
+        global node_path
+        global destination_node
+
         if first_node not in self.nodes.keys:
             print('Location not found')
             # return something?
@@ -226,22 +269,25 @@ class Plan():
             print('Location not found')
             # return something?
 
-        # Plan the route from the initial location to the guide start location
-        # add this to the master list of points
-        path = self.astar_search(current_node, first_node)
-        print(path)
-        # add coordinates to the master plan
+        path, dist = self.astar.astar(current_node, first_node)
         for node in path:
-            self.plan.append(self.nodes.get(node))
+            coord = Coord()
+            coord.x = self.nodes.get(node)[0]
+            coord.y = self.nodes.getInode)[1]
+            self.plan.append(coord)
+
+        path, dist = self.astar.astar(first_node, second_node)
+        for node in path:
+            coord = Coord()
+            coord.x = self.nodes.get(node)[0]
+            coord.y = self.nodes.getInode)[1]
+            self.plan.append(coord)
         
-        # Next plan routes from the start location to the destination
-        path = self.astar_search(first_node, second_node)
-        print(path)
-        # add coordinates to the master plan
-        for node in path:
-            self.plan.append(self.nodes.get(node))
+        destination_node = second_node
+        node_path = path
         
         # once done traverse the master path
+        return self.plan
         
         
         
@@ -251,17 +297,23 @@ class Plan():
             print('Location not found')
             # return something?
             
-        # Plan the route from the initial location to the tour start location
-        # add this to the master list of points
-        path = self.astar_search(current_node, first_node)
-        print(path)
+        path, dist = self.astar.astar(current_node, first_node)
         # add coordinates to the master plan
         for node in path:
-            self.plan.append(self.nodes.get(node))
+            coord = Coord()
+            coord.x = self.nodes.get(node)[0]
+            coord.y = self.nodes.getInode)[1]
+            self.plan.append(coord)
+        
+        path = self.astar.find_tour_path(first_node, self.important_nodes)
+        for node in path:
+            coord = Coord()
+            coord.x = self.nodes.get(node)[o]
+            coord.y = self.nodes.get(node)[1]
+            self.plan.append(coord)
+        
+        return self.plan
             
-        # Next plan routes from the start location to the points of interest
-        # adding each successive path to the master list
-        # calculating A* to find the closest node from start and looping for each successive node
 
 
 class Support():
@@ -355,8 +407,6 @@ class Navigation():
         while self.laser.obstacle_detected:            
             self.velocity_pub.publish(turn_msg)
 
-
-
     # Move in increments and turn
     def move_dist(self, waypoints):
         dist_diff = self.support.calculate_distance(my_location, waypoints[self.waypoint_index])
@@ -401,11 +451,6 @@ class Navigation():
             
             if dist_diff < self.min_dist_to_dest:
                 self.min_dist_to_dest = dist_diff
-            '''
-            print('dist_diff ' + str(dist_diff))
-            print('min_diff ' + str(self.min_dist_to_dest))
-            print('T_diff ' + str(dist_diff - self.min_dist_to_dest))
-            '''
 
             
             if dist_diff - self.min_dist_to_dest > NAV_FAILURE_DISTANCE_THRESHOLD:
@@ -417,6 +462,7 @@ class Navigation():
 
     def navigate(self, waypoints):
         global my_location
+        global current_node
 
         # Assuming robot faces forward (+y direction) at 0,0 initially
         while self.waypoint_index < len(waypoints):
@@ -430,9 +476,11 @@ class Navigation():
 
             #print(my_location.to_string())
             print('Arrived at: ' + waypoints[self.waypoint_index].to_string())
+            #current_node = destination_node
 
             self.waypoint_index += 1
             self.min_dist_to_dest = float('inf')
+            current_node = node_path[self.waypoint_index]
             rospy.sleep(1)
         
         print('Finished')
@@ -448,11 +496,21 @@ def choice_callback(data):
     planner = Plan()
     navigator = Navigation(laser)
 
-    if data == 1:
-        print "choice was 1"
-        # Initial location is West Devon
-    elif data == 2:
-        print "choice was 2"
+    
+    points = [[Coord(0, 0), Coord(-5, -5)]]
+    
+    # pass in a list of coords to plan route
+    waypoints = planner.plan_route(points)
+    for i in range(len(waypoints)):
+        print(waypoints[i].to_string())
+
+    navigator.navigate(waypoints)
+
+    # if data == 1:
+    #     print "choice was 1"
+    #     # Initial location is West Devon
+    # elif data == 2:
+    #     print "choice was 2"
         # Initial location is East Devon
 
     # points = []
