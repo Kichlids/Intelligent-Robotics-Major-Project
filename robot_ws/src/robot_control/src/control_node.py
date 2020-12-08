@@ -2,6 +2,9 @@
 
 import rospy
 import math
+import numpy as np
+import cv2
+from cv_bridge import CvBridge, CvBridgeError
 
 from path_finding import Graph
 from path_finding import Astar
@@ -9,13 +12,17 @@ from path_finding import Astar
 from geometry_msgs.msg import Twist
 from nav_msgs.msg import Odometry
 from sensor_msgs.msg import LaserScan
+from sensor_msgs.msg import Image
 from std_msgs.msg import Bool
 from std_msgs.msg import Int32
+
 
 #from robot_msgs.msg import coordinate
 #from robot_msgs.msg import tasks
 
 from tf.transformations import euler_from_quaternion
+
+
 
 # Speed ft/s
 LINEAR_SPEED_DEFAULT = 0.25
@@ -147,59 +154,41 @@ class Laser():
         else:
             self.obstacle_detected = False
 
-'''
-# TODO: Replace Plan() with PlanAStar or such
-class Plan():
+class Camera():
     def __init__(self):
-        self.support = Support()
+        self.image_sub = rospy.Subscriber("/camera/rgb/image_raw", Image, self.image_callback)
 
-    def plan_route(self, list_set):
-        global my_location
+    def image_callback(self, img_msg):
 
-        coord_pairs = list_set
+        # Try to convert the ROS Image message to a CV2 Image
+        try:
+            bridge = CvBridge()
+            cv_image = bridge.imgmsg_to_cv2(img_msg, "passthrough")
+        except CvBridgeError, e:
+            rospy.logerr("CvBridge Error: {0}".format(e))
 
-        waypoints = []
+        # Show the converted image
+        self.show_image(cv_image)
+        #self.filter_image(cv_image)
+
+    def show_image(self, img):
+
+        filtered = self.filter_image(img)
+
+        cv2.imshow("Image Window", filtered)
+        cv2.waitKey(3)
+    
+    def filter_image(self, img):
+        hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+    
+        lower_red = np.array([30,150,50])
+        upper_red = np.array([255,255,180])
+
+        mask = cv2.inRange(hsv, lower_red, upper_red)
+        median_blur = cv2.medianBlur(mask, 15)
         
-        start = my_location        
-        
-        min_dist = float('inf')
-        min_index = -1
-        
-        for i in range(len(coord_pairs)):
+        return median_blur
 
-            dist = self.support.calculate_distance(start, coord_pairs[i][0])
-            if dist < min_dist:
-                min_dist = dist
-                min_index = i
-
-        waypoints.append(coord_pairs[min_index][0])
-        waypoints.append(coord_pairs[min_index][1])
-
-        start = coord_pairs[min_index][1]
-        coord_pairs.pop(min_index)
-
-        while len(coord_pairs) > 0:
-
-            min_dist = float('inf')
-            min_index = -1
-
-            for i in range(len(coord_pairs)):
-                dist = self.support.calculate_distance(start, coord_pairs[i][0])
-                if dist < min_dist:
-                    min_dist = dist
-                    min_index = i
-            
-            waypoints.append(coord_pairs[min_index][0])
-            waypoints.append(coord_pairs[min_index][1])
-            
-            start = coord_pairs[min_index][1]
-            coord_pairs.pop(min_index)
-
-        for i in range(len(waypoints)):
-            waypoints[i].to_string()
-
-        return waypoints
-'''
 
 
 class Plan():
@@ -250,6 +239,8 @@ class Plan():
         #self.imp_nodes = ['Devon_Atrium', 'Practice_Bay', 'Computer_Lab', 'Electronics_lab', 'CS/ECE_Office']
         self.imp_nodes = ['Node2', 'Node3', 'Node10', 'Node11', 'Node17', 'Node20']
 
+        # list of nodes with a landmark
+        self.imp_nodes_with_landmark = ['Node20']
 
         self.graph.connect('Node1', 'Node2', 5)
         self.graph.connect('Node2', 'Node3', 2.5)
@@ -332,8 +323,6 @@ class Plan():
         
         return self.plan
             
-
-
 class Support():
 
     def calculate_distance(self, coord1, coord2):
@@ -350,15 +339,15 @@ class Support():
 
 class Navigation():
 
-    def __init__(self, laser):
+    def __init__(self, laser, plan):
         self.support = Support()
         self.laser = laser
+        self.plan = plan
 
         self.waypoint_index = 0
         self.min_dist_to_dest = float('inf')
 
         self.velocity_pub = rospy.Publisher('/cmd_vel_mux/input/navi', Twist, queue_size = 10)
-
 
     #Return angle of rotation in degrees
     def get_rotation_angle(self, destination):
@@ -500,9 +489,7 @@ class Navigation():
 
         # Assuming robot faces forward (+y direction) at 0,0 initially
         while self.waypoint_index < len(waypoints):
-            current_node = node_path[self.waypoint_index]
-            print('current node: ' + current_node)
-
+            
             print('Heading to ' + waypoints[self.waypoint_index].to_string())
             #print('From ' + my_location.to_string())
             rospy.sleep(1)
@@ -515,6 +502,8 @@ class Navigation():
             print('Arrived at: ' + waypoints[self.waypoint_index].to_string())
             #current_node = destination_node
 
+            print('current node: ' + current_node)
+            current_node = node_path[self.waypoint_index]
             self.waypoint_index += 1
             self.min_dist_to_dest = float('inf')
             
@@ -524,7 +513,10 @@ class Navigation():
         print('Finished')
         print('current node: ' + current_node)
         node_path = []
-        #print(my_location.to_string())
+    
+    # def look_for_landmark(self, current_node):
+    #     if current_node in self.plan.imp_nodes_with_landmark:
+
 
 def choice_callback(data):
     busy_bool.data = True
@@ -532,19 +524,10 @@ def choice_callback(data):
 
     odom = Odom()
     laser = Laser()
+    camera = Camera()
 
     planner = Plan()
-    navigator = Navigation(laser)
-
-    
-    #points = [[Coord(0, 0), Coord(-5, -5)]]
-    
-    # pass in a list of coords to plan route
-    # waypoints = planner.plan_route(points)
-    # for i in range(len(waypoints)):
-    #     print(waypoints[i].to_string())
-
-    #navigator.navigate(waypoints)
+    navigator = Navigation(laser, planner)
 
 
     waypoints = planner.plan_route('Node8', 'Node20')
@@ -552,36 +535,6 @@ def choice_callback(data):
     for i in range(len(waypoints)):
         print(waypoints[i].to_string())
     navigator.navigate(waypoints)
-
-    # if data == 1:
-    #     print "choice was 1"
-    #     # Initial location is West Devon
-    # elif data == 2:
-    #     print "choice was 2"
-        # Initial location is East Devon
-
-    # points = []
-
-    # for i in range(0, len(data.coord_list), 2):
-    #     print "i: " + str(i) + ", length: " + str(len(data.coord_list))
-
-    #     temp = []
-
-    #     start = Coord(data.coord_list[i].x_coord, data.coord_list[i].y_coord)
-    #     end = Coord(data.coord_list[i + 1].x_coord, data.coord_list[i + 1].y_coord)
-
-    #     temp.append(start)
-    #     temp.append(end)
-
-    #     points.append(temp)
-
-    ### TODO: Actually navigate etc.
-    ### First find a path to tour start location from current location
-    ### Then, create regular tour path etc...
-
-    # waypoints = planner.plan_route(points)
-
-    # navigator.navigate(waypoints)
 
     busy_bool.data = False
     busy_pub.publish(busy_bool)
