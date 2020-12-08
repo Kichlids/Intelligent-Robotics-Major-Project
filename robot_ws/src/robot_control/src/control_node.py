@@ -235,14 +235,14 @@ class Plan():
         self.nodes['Node14'] = [18, 33]
         self.nodes['Node15'] = [24, 33]
         # REPF sidewalk
-        self.nodes['Node16'] = [24, 21]
+        self.nodes['Node16'] = [24, 19]
         # REPF entrance
-        self.nodes['Node17'] = [28, 21]
+        self.nodes['Node17'] = [28, 19]
         # REPF lobby
-        self.nodes['Node18'] = [28, 26]
-        self.nodes['Node19'] = [31.5, 26]
+        self.nodes['Node18'] = [28, 22]
+        self.nodes['Node19'] = [31.5, 22]
         # practice bay
-        self.nodes['Node20'] = [31.5, 36]
+        self.nodes['Node20'] = [31.5, 31]
 
         
         # list of important nodes (just the names)
