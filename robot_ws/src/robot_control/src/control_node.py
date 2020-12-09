@@ -29,7 +29,8 @@ LINEAR_SPEED_DEFAULT = 0.25
 # Rotation speed rad ft/s 
 ANGULAR_SPEED_DEFAULT = 0.25
 
-linear_speed_fast = 2
+linear_speed_fast = 2.5
+angular_speed_landmark = 0.2
 
 # Obstacle avoidance threshold in ft, including the position of the laser scan sensor
 LASER_AVOIDANCE_DISTANCE = 0.5#1.5
@@ -157,6 +158,8 @@ class Laser():
 class Camera():
     def __init__(self):
         self.image_sub = rospy.Subscriber("/camera/rgb/image_raw", Image, self.image_callback)
+        self.landmark_direction = -2
+
 
     def image_callback(self, img_msg):
 
@@ -167,6 +170,10 @@ class Camera():
         except CvBridgeError, e:
             rospy.logerr("CvBridge Error: {0}".format(e))
 
+        masked = self.filter_image(cv_image)
+        self.landmark_direction = self.get_landmark_direction(masked)
+        #print(self.landmark_direction)
+
         # Show the converted image
         self.show_image(cv_image)
         #self.filter_image(cv_image)
@@ -174,22 +181,53 @@ class Camera():
     def show_image(self, img):
 
         filtered = self.filter_image(img)
-
+        cv2.imshow('raw', img)
         cv2.imshow("Image Window", filtered)
         cv2.waitKey(3)
     
     def filter_image(self, img):
         hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
-    
-        lower_red = np.array([30,150,50])
-        upper_red = np.array([255,255,180])
+
+        #print(img.shape)
+        # img dimension is 640x480 (w, h)
+        # center of img would be w = 320
+
+        lower_red = np.array([0,50,50])
+        upper_red = np.array([10,255,255])
 
         mask = cv2.inRange(hsv, lower_red, upper_red)
-        median_blur = cv2.medianBlur(mask, 15)
-        
-        return median_blur
 
+        return mask
+    
+    '''
+    return 1 if right
+            0 if center
+            -1 if left
+            -2 if landmark not found
+    '''
+    def get_landmark_direction(self, mask):
 
+        im2, contours, hierarchy = cv2.findContours(mask,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
+        #print(len(contours))
+        for c in contours:
+            moments = cv2.moments(mask)
+
+            if moments["m00"] != 0:
+                cX = int(moments["m10"] / moments["m00"])
+                cY = int(moments["m01"] / moments["m00"])
+            else:
+                cX = 0
+                cY = 0
+
+            if cX < 320 - 40:
+                return -1
+            elif cX > 320 + 40:
+                return 1
+            else:
+                return 0
+
+        return -2
+    
 
 class Plan():
     def __init__(self):
@@ -339,10 +377,11 @@ class Support():
 
 class Navigation():
 
-    def __init__(self, laser, plan):
+    def __init__(self, laser, plan, camera):
         self.support = Support()
         self.laser = laser
         self.plan = plan
+        self.camera = Camera()
 
         self.waypoint_index = 0
         self.min_dist_to_dest = float('inf')
@@ -487,9 +526,11 @@ class Navigation():
         print('waypoit length')
         print(len(waypoints))
 
+        node_index = 0
+    
         # Assuming robot faces forward (+y direction) at 0,0 initially
         while self.waypoint_index < len(waypoints):
-            
+
             print('Heading to ' + waypoints[self.waypoint_index].to_string())
             #print('From ' + my_location.to_string())
             rospy.sleep(1)
@@ -500,12 +541,18 @@ class Navigation():
 
             #print(my_location.to_string())
             print('Arrived at: ' + waypoints[self.waypoint_index].to_string())
-            #current_node = destination_node
+            current_node = node_path[node_index]
+            node_index += 1
 
             print('current node: ' + current_node)
             current_node = node_path[self.waypoint_index]
             self.waypoint_index += 1
             self.min_dist_to_dest = float('inf')
+
+            # need to search for a landmark?
+            if current_node in self.plan.imp_nodes_with_landmark:
+                print('Searching for a landmark...')
+                self.look_for_landmark()
             
 
             rospy.sleep(1)
@@ -514,8 +561,29 @@ class Navigation():
         print('current node: ' + current_node)
         node_path = []
     
-    # def look_for_landmark(self, current_node):
-    #     if current_node in self.plan.imp_nodes_with_landmark:
+    def look_for_landmark(self):
+
+        while self.camera.landmark_direction != 0:
+            print(self.camera.landmark_direction)
+
+            turn_msg = Twist()
+
+            # if landmark is to the left, turn left
+            if self.camera.landmark_direction == -1:
+                turn_msg.angular.z = angular_speed_landmark
+            # if it's to the right or not found, keep turning right
+            else:
+                turn_msg.angular.z = -angular_speed_landmark
+            
+            self.velocity_pub.publish(turn_msg)
+        
+        print('FOUND LANDMARK!')
+
+        vel_msg = Twist()
+        vel_msg.linear.x = self.support.feet_to_meters(5)
+        self.velocity_pub.publish(vel_msg)
+
+
 
 
 def choice_callback(data):
@@ -527,7 +595,7 @@ def choice_callback(data):
     camera = Camera()
 
     planner = Plan()
-    navigator = Navigation(laser, planner)
+    navigator = Navigation(laser, planner, camera)
 
 
     waypoints = planner.plan_route('Node8', 'Node20')
