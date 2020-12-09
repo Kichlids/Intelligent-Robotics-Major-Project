@@ -29,36 +29,23 @@ class InputReader:
 
         if data.data == False:
             rospy.sleep(1)
-            print "To start the service enter an option number to choose a location to start at and press Enter \n" + "1) Start at the West entrance to Devon \n" + "2) Start at the East entrance to Devon \n"
+            print('To start the service enter an option number to choose a location to start at and press Enter \n'
+                    + '1) Start at the West entrance to Devon \n' 
+                    + '2) Start at the East entrance to Devon \n')
 
             string_input = raw_input()
-            while string_input != "":
+            while string_input != '':
                 
-                if string_input == "1":
+                if string_input == '1':
                     myChoice.data = 1
-                elif string_input == "2":
+                elif string_input == '2':
                     myChoice.data = 2
-
-                #temp = re.findall(r'\d+', string_input)
-                #nums = list(map(float, temp)) 
-
-                #if len(nums) == 4:
-                #    start_coord = coordinate()
-                #    end_coord = coordinate()
-                #    start_coord.x_coord = nums[0]
-                #    start_coord.y_coord = nums[1]
-                #    end_coord.x_coord = nums[2]
-                #    end_coord.y_coord = nums[3]
-
-                #    myTasks.coord_list.append(start_coord)
-                #    myTasks.coord_list.append(end_coord)
-                #else:
-                #    print "Input not valid as (<start_coordinates>, <end_coordinates>)"
-                string_input = raw_input()
 
             self.choice_pub.publish(myChoice)
             
-            print "Select which service you would like to receive \n" + "1) Tour \n" + "2) Destination guidance \n"
+            print "Select which service you would like to receive \n" 
+                    + "1) Tour \n" 
+                    + "2) Destination guidance \n"
             
             string_input = raw_input()
             while string_input != "":
@@ -67,20 +54,25 @@ class InputReader:
                     tour.data = 1
                 elif string_input == "2":
                     tour.data = 0
-                    print "Select which destination you would like to go to \n" + "1) Rawl Engineering Facility \n" + "Rawl Practice Bay \n" + "3) Devon Energy Hall \n" + "4) Devon Computer Lab \n" + "5) Devon Electrical Lab \n"
+                    print "Select which destination you would like to go to \n"
+                         + "1) Rawl Engineering Facility \n" + 
+                         + "2) Rawl Practice Bay \n" 
+                         + "3) Devon Energy Hall \n" 
+                         + "4) Devon Computer Lab \n" 
+                         + "5) Devon Electrical Lab \n"
                     
                     string_input = raw_input()
-                    while string_input != "":
-                        if string_input == "1":
+                    while string_input != '':
+                        if string_input == '1':
                             dest.data = 1
-                        elif string_input == "2": 
+                        elif string_input == '2': 
                             dest.data = 2
-                        elif string_input == "3": 
-                            dest.data = 2
-                        elif string_input == "4": 
-                            dest.data = 2
-                        elif string_input == "5": 
-                            dest.data = 2
+                        elif string_input == '3': 
+                            dest.data = 3
+                        elif string_input == '4': 
+                            dest.data = 4
+                        elif string_input == '5': 
+                            dest.data = 5
             
             self.tour_pub.publish(tour)
             self.dest_pub.publish(dest)
