@@ -29,7 +29,7 @@ LINEAR_SPEED_DEFAULT = 0.25
 # Rotation speed rad ft/s 
 ANGULAR_SPEED_DEFAULT = 0.25
 
-linear_speed_fast = 2
+linear_speed_fast = 2.5
 angular_speed_landmark = 0.2
 
 # Obstacle avoidance threshold in ft, including the position of the laser scan sensor
@@ -551,6 +551,7 @@ class Navigation():
 
             # need to search for a landmark?
             if current_node in self.plan.imp_nodes_with_landmark:
+                print('Searching for a landmark...')
                 self.look_for_landmark()
             
 
@@ -561,17 +562,26 @@ class Navigation():
         node_path = []
     
     def look_for_landmark(self):
-        turn_msg = Twist()
 
         while self.camera.landmark_direction != 0:
+            print(self.camera.landmark_direction)
+
+            turn_msg = Twist()
+
             # if landmark is to the left, turn left
             if self.camera.landmark_direction == -1:
-                turn_msg.angular.z = -ANGULAR_SPEED_DEFAULT
+                turn_msg.angular.z = angular_speed_landmark
             # if it's to the right or not found, keep turning right
             else:
-                turn_msg.angular.z = ANGULAR_SPEED_DEFAULT
+                turn_msg.angular.z = -angular_speed_landmark
+            
+            self.velocity_pub.publish(turn_msg)
         
         print('FOUND LANDMARK!')
+
+        vel_msg = Twist()
+        vel_msg.linear.x = self.support.feet_to_meters(5)
+        self.velocity_pub.publish(vel_msg)
 
 
 
