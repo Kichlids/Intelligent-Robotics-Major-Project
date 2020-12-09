@@ -3,6 +3,7 @@ import rospy
 
 #from robot_msgs.msg import coordinate
 #from robot_msgs.msg import tasks
+from robot_msgs.msg import choice
 from std_msgs.msg import Bool
 from std_msgs.msg import Int32
 
@@ -13,7 +14,7 @@ class InputReader:
     # Create subscriber for subscribing to bool from control node
     def __init__(self):
         #self.tasks_pub = rospy.Publisher('/robot/tasks', tasks, queue_size = 10)
-        self.choice_pub = rospy.Publisher('/robot/choice', Int32, queue_size = 10)
+        self.choice_pub = rospy.Publisher('/robot/choice', choice, queue_size = 10)
         self.tour_pub = rospy.Publisher('/robot/tour', Int32, queue_size = 10)
         self.dest_pub = rospy.Publisher('/robot/destination', Int32, queue_size = 10)
         self.busy_sub = rospy.Subscriber('/robot/busy_bool', Bool, self.input_callback)
@@ -23,9 +24,7 @@ class InputReader:
     def input_callback(self, data):
         #myTasks = tasks()
 
-        myChoice = Int32()
-        tour = Int32()
-        dest = Int32()
+        myChoice = choice()
 
         if data.data == False:
             rospy.sleep(1)
@@ -37,11 +36,10 @@ class InputReader:
             while string_input != '':
                 
                 if string_input == '1':
-                    myChoice.data = 1
+                    myChoice.start = 1
                 elif string_input == '2':
-                    myChoice.data = 2
+                    myChoice.start = 2
 
-            self.choice_pub.publish(myChoice)
             
             print "Select which service you would like to receive \n" 
                     + "1) Tour \n" 
@@ -51,31 +49,31 @@ class InputReader:
             while string_input != "":
                 
                 if string_input == "1":
-                    tour.data = 1
+                    myChoice.tour = 1
                 elif string_input == "2":
-                    tour.data = 0
+                    myChoice.tour = 0
                     print "Select which destination you would like to go to \n"
                          + "1) Rawl Engineering Facility \n" + 
                          + "2) Rawl Practice Bay \n" 
-                         + "3) Devon Energy Hall \n" 
+                         + "3) CS/ECE office \n" 
                          + "4) Devon Computer Lab \n" 
                          + "5) Devon Electrical Lab \n"
                     
                     string_input = raw_input()
                     while string_input != '':
                         if string_input == '1':
-                            dest.data = 1
+                             myChoice.dest = 1
                         elif string_input == '2': 
-                            dest.data = 2
+                             myChoice.dest = 2
                         elif string_input == '3': 
-                            dest.data = 3
+                             myChoice.dest = 3
                         elif string_input == '4': 
-                            dest.data = 4
+                             myChoice.dest = 4
                         elif string_input == '5': 
-                            dest.data = 5
+                             myChoice.dest = 5
             
-            self.tour_pub.publish(tour)
-            self.dest_pub.publish(dest)
+            
+            self.choice_pub.publish(myChoice)
             rospy.sleep(5)
 
 # Initializes our node as 'input_node'

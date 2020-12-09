@@ -589,17 +589,32 @@ class Navigation():
 def choice_callback(data):
     busy_bool.data = True
     busy_pub.publish(busy_bool)
-
+    
+    start = ''
     odom = Odom()
     laser = Laser()
     camera = Camera()
-
+    destination_nodes = ['Node18', 'Node20', 'Node1', 'Node10', 'Node3']
+    
     planner = Plan()
     navigator = Navigation(laser, planner, camera)
 
-
-    waypoints = planner.plan_route('Node8', 'Node20')
-    #waypoints = planner.tour('Node3')
+    if data.start == 1:
+        # start node at node 5 (West Devon entrance)
+        start = 'Node5'
+    elif data.start == 2:
+        # start node at node 12 (East Devon entrance)
+        start = 'Node12'
+        
+    if data.tour == 1:
+        # tour mode
+        waypoints = planner.tour(start)
+    elif data.tour == 0:
+        # route mode
+        waypoints = planner.plan_route(start, destination_nodes[data.dest-1])
+    
+    # waypoints = planner.plan_route('Node8', 'Node20')
+    # waypoints = planner.tour('Node3')
     for i in range(len(waypoints)):
         print(waypoints[i].to_string())
     navigator.navigate(waypoints)
@@ -618,7 +633,7 @@ def init_control_node():
 
     # First time
     global busy_pub
-    choice_sub = rospy.Subscriber('/robot/choice', Int32, choice_callback)
+    choice_sub = rospy.Subscriber('/robot/choice', choice, choice_callback)
     busy_pub = rospy.Publisher('/robot/busy_bool', Bool, queue_size=10)
     while not busy_bool.data:
         busy_pub.publish(busy_bool)
