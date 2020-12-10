@@ -1,5 +1,3 @@
-
-
 # This class represent a graph
 class Graph:
     # Initialize the class
@@ -199,3 +197,4 @@ class Astar:
         total_dist = total_dist + dist
         
         return tour_path, total_dist
+
