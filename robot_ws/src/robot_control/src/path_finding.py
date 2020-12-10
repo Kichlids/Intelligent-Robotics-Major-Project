@@ -1,3 +1,5 @@
+
+
 # This class represent a graph
 class Graph:
     # Initialize the class
@@ -197,62 +199,3 @@ class Astar:
         total_dist = total_dist + dist
         
         return tour_path, total_dist
-
-
-# nodes = {}
-# nodes['Node1'] = [6, 2]
-# nodes['Node2'] = [6, 7]
-# nodes['Node3'] = [8.5, 7]
-# nodes['Node4'] = [11, 7]
-# nodes['Node5'] = [11, 0]
-# nodes['Node6'] = [18, 0]
-# nodes['Node7'] = [18, 4]
-# nodes['Node8'] = [24, 4]
-# nodes['Node9'] = [6, 30]
-# nodes['Node10'] = [8.5, 30]
-# nodes['Node11'] = [11, 30]
-# nodes['Node12'] = [11, 37]
-# nodes['Node13'] = [18, 37]
-# nodes['Node14'] = [18, 32]
-# nodes['Node15'] = [24, 32]
-# nodes['Node16'] = [24, 18]
-# nodes['Node17'] = [28, 18]
-# nodes['Node18'] = [28, 21]
-# nodes['Node19'] = [31.5, 27.5]
-# nodes['Node20'] = [31.5, 32.5]
-
-# important_nodes = ['Node2', 'Node3', 'Node10', 'Node11', 'Node17', 'Node20']
-
-
-# graph = Graph()
-# graph.connect('Node1', 'Node2', 5)
-# graph.connect('Node2', 'Node3', 2.5)
-# graph.connect('Node2', 'Node9', 23)
-# graph.connect('Node3', 'Node4', 2.5)
-# graph.connect('Node4', 'Node5', 7)
-# graph.connect('Node4', 'Node11', 23)
-# graph.connect('Node5', 'Node6', 7)
-# graph.connect('Node6', 'Node7', 4)
-# graph.connect('Node7', 'Node8', 6)
-# graph.connect('Node7', 'Node14', 28)
-# graph.connect('Node8', 'Node16', 14)
-# graph.connect('Node16', 'Node17', 4)
-# graph.connect('Node17', 'Node18', 3)
-# graph.connect('Node18', 'Node19', 7.38)
-# graph.connect('Node19', 'Node20', 5)
-# graph.connect('Node9', 'Node10', 2.5)
-# graph.connect('Node10', 'Node11', 2.5)
-# graph.connect('Node11', 'Node12', 7)
-# graph.connect('Node12', 'Node13', 7)
-# graph.connect('Node13', 'Node14', 5)
-# graph.connect('Node14', 'Node15', 6)
-# graph.connect('Node15', 'Node16', 14)
-# graph.make_undirected()
-
-
-# astar = Astar(nodes, graph)
-
-# #Run the search algorithm
-# path, dist = astar.find_tour_path('Node5', important_nodes)
-# print(path)
-# print(dist)

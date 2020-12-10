@@ -12,6 +12,7 @@ add_message_files(
   FILES
   coordinate.msg
   tasks.msg
+  choice.msg
 )
 
 generate_messages(

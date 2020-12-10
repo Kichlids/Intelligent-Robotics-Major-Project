@@ -33,44 +33,47 @@ class InputReader:
                     + '2) Start at the East entrance to Devon \n')
 
             string_input = raw_input()
-            while string_input != '':
+            while string_input != '\n':
                 
                 if string_input == '1':
                     myChoice.start = 1
+                    break
                 elif string_input == '2':
                     myChoice.start = 2
+                    break
 
             
-            print "Select which service you would like to receive \n" 
-                    + "1) Tour \n" 
-                    + "2) Destination guidance \n"
+            print "Select which service you would like to receive \n" + "1) Tour \n" + "2) Destination guidance \n"
             
             string_input = raw_input()
             while string_input != "":
                 
                 if string_input == "1":
                     myChoice.tour = 1
+                    break
                 elif string_input == "2":
                     myChoice.tour = 0
-                    print "Select which destination you would like to go to \n"
-                         + "1) Rawl Engineering Facility \n" + 
-                         + "2) Rawl Practice Bay \n" 
-                         + "3) CS/ECE office \n" 
-                         + "4) Devon Computer Lab \n" 
-                         + "5) Devon Electrical Lab \n"
+                    print "Select which destination you would like to go to \n"+ "1) Rawl Engineering Facility \n" + "2) Rawl Practice Bay \n" + "3) CS/ECE office \n" + "4) Devon Computer Lab \n" + "5) Devon Electrical Lab \n"
                     
                     string_input = raw_input()
                     while string_input != '':
                         if string_input == '1':
                              myChoice.dest = 1
+                             break
                         elif string_input == '2': 
                              myChoice.dest = 2
+                             break
                         elif string_input == '3': 
                              myChoice.dest = 3
+                             break
                         elif string_input == '4': 
                              myChoice.dest = 4
+                             break
                         elif string_input == '5': 
                              myChoice.dest = 5
+                             break
+                    
+                    break
             
             
             self.choice_pub.publish(myChoice)

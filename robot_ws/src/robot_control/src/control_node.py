@@ -15,6 +15,7 @@ from sensor_msgs.msg import LaserScan
 from sensor_msgs.msg import Image
 from std_msgs.msg import Bool
 from std_msgs.msg import Int32
+from robot_msgs.msg import choice
 
 
 #from robot_msgs.msg import coordinate
@@ -29,7 +30,7 @@ LINEAR_SPEED_DEFAULT = 0.25
 # Rotation speed rad ft/s 
 ANGULAR_SPEED_DEFAULT = 0.25
 
-linear_speed_fast = 2.5
+linear_speed_fast = 1.8
 angular_speed_landmark = 0.2
 
 # Obstacle avoidance threshold in ft, including the position of the laser scan sensor
@@ -160,6 +161,12 @@ class Camera():
         self.image_sub = rospy.Subscriber("/camera/rgb/image_raw", Image, self.image_callback)
         self.landmark_direction = -2
 
+        self.needs_camera = True
+    
+    def __del__(self):
+        print('cam destroyed')
+        cv2.destroyAllWindows()
+
 
     def image_callback(self, img_msg):
 
@@ -174,16 +181,23 @@ class Camera():
         self.landmark_direction = self.get_landmark_direction(masked)
         #print(self.landmark_direction)
 
+        #self.show_image(cv_image)
+
         # Show the converted image
-        self.show_image(cv_image)
-        #self.filter_image(cv_image)
+        # if self.needs_camera:
+        #     self.show_image(cv_image)
+        # else:
+        #     self.close_image()
 
     def show_image(self, img):
 
         filtered = self.filter_image(img)
         cv2.imshow('raw', img)
-        cv2.imshow("Image Window", filtered)
-        cv2.waitKey(3)
+        cv2.imshow("filtered", filtered)
+        cv2.waitKey(1)
+    
+    def close_image(self):
+        cv2.destroyAllWindows()
     
     def filter_image(self, img):
         hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
@@ -196,7 +210,7 @@ class Camera():
         upper_red = np.array([10,255,255])
 
         mask = cv2.inRange(hsv, lower_red, upper_red)
-
+    
         return mask
     
     '''
@@ -266,8 +280,8 @@ class Plan():
         # REPF entrance
         self.nodes['Node17'] = [28, 19]
         # REPF lobby
-        self.nodes['Node18'] = [28, 22]
-        self.nodes['Node19'] = [31.5, 22]
+        self.nodes['Node18'] = [28, 23.5]
+        self.nodes['Node19'] = [31.5, 23.5]
         # practice bay
         self.nodes['Node20'] = [31.5, 31]
 
@@ -486,8 +500,6 @@ class Navigation():
                 # Rotate towards destination
                 self.rotate_to_angle(waypoints)
             
-
-            #self.rotate_to_angle(waypoints)
             
             rospy.sleep(1)
 
@@ -521,6 +533,8 @@ class Navigation():
         global current_node
         global node_path
 
+        self.camera.needs_camera = True
+
         print('node path:')
         print(node_path)
         print('waypoit length')
@@ -551,14 +565,21 @@ class Navigation():
 
             # need to search for a landmark?
             if current_node in self.plan.imp_nodes_with_landmark:
-                print('Searching for a landmark...')
-                self.look_for_landmark()
+                if node_path.index(current_node) != 0:
+                    print('Searching for a landmark...')
+                    self.look_for_landmark()
+            
+            self.camera.needs_camera = False
             
 
             rospy.sleep(1)
         
         print('Finished')
         print('current node: ' + current_node)
+
+        print('To start the service enter an option number to choose a location to start at and press Enter \n'
+            + '1) Start at the West entrance to Devon \n' 
+            + '2) Start at the East entrance to Devon \n')
         node_path = []
     
     def look_for_landmark(self):
@@ -580,24 +601,39 @@ class Navigation():
         print('FOUND LANDMARK!')
 
         vel_msg = Twist()
-        vel_msg.linear.x = self.support.feet_to_meters(5)
+        vel_msg.linear.x = self.support.feet_to_meters(1.5)
+        self.velocity_pub.publish(vel_msg)
+        vel_msg.linear.x = self.support.feet_to_meters(1.5)
         self.velocity_pub.publish(vel_msg)
 
 
 
 
+
 def choice_callback(data):
+
+    print('Received:')
+    print(data.start)
+    print(data.tour)
+    print(data.dest)
+
     busy_bool.data = True
     busy_pub.publish(busy_bool)
+
+    #cv2.destroyAllWindows()
+
+    print('got here 1')
+
+    destination_nodes = ['Node18', 'Node20', 'Node1', 'Node10', 'Node3']
     
     start = ''
     odom = Odom()
     laser = Laser()
     camera = Camera()
-    destination_nodes = ['Node18', 'Node20', 'Node1', 'Node10', 'Node3']
-    
     planner = Plan()
     navigator = Navigation(laser, planner, camera)
+
+    print('got here 2')
 
     if data.start == 1:
         # start node at node 5 (West Devon entrance)
@@ -609,12 +645,13 @@ def choice_callback(data):
     if data.tour == 1:
         # tour mode
         waypoints = planner.tour(start)
-    elif data.tour == 0:
+    else:#elif data.tour == 0:
         # route mode
         waypoints = planner.plan_route(start, destination_nodes[data.dest-1])
     
     # waypoints = planner.plan_route('Node8', 'Node20')
     # waypoints = planner.tour('Node3')
+    print('navigating to nodes...')
     for i in range(len(waypoints)):
         print(waypoints[i].to_string())
     navigator.navigate(waypoints)
@@ -639,10 +676,6 @@ def init_control_node():
         busy_pub.publish(busy_bool)
         #print "Published busy bool"
 
-    '''
-    points = [[Coord(2, 3), Coord(4, 5)],
-              [Coord(2, 6), Coord(1, 1)]]
-    '''
     rospy.spin()
 
 if __name__ == '__main__':
