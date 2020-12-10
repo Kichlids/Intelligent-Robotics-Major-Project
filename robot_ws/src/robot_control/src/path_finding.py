@@ -1,3 +1,5 @@
+# Reference: https://www.annytab.com/a-star-search-algorithm-in-python/
+
 # This class represent a graph
 class Graph:
     # Initialize the class
