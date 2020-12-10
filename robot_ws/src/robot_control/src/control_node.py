@@ -17,10 +17,6 @@ from std_msgs.msg import Bool
 from std_msgs.msg import Int32
 from robot_msgs.msg import choice
 
-
-#from robot_msgs.msg import coordinate
-#from robot_msgs.msg import tasks
-
 from tf.transformations import euler_from_quaternion
 
 
@@ -30,11 +26,13 @@ LINEAR_SPEED_DEFAULT = 0.25
 # Rotation speed rad ft/s 
 ANGULAR_SPEED_DEFAULT = 0.25
 
+# Speed when robot goes fast
 linear_speed_fast = 1.8
+# Rotation speed when searching for landmark
 angular_speed_landmark = 0.2
 
 # Obstacle avoidance threshold in ft, including the position of the laser scan sensor
-LASER_AVOIDANCE_DISTANCE = 0.5#1.5
+LASER_AVOIDANCE_DISTANCE = 0.5
 
 '''
 If robot moves away this much distance (ft),
@@ -43,10 +41,11 @@ and move on to next waypoint
 '''
 NAV_FAILURE_DISTANCE_THRESHOLD = 2
 
+# Determine if robot has arrived
 dist_diff_threshold = 0.1
 
 
-
+# Coordinate class that has x and y coords
 class Coord():
 
     def __init__(self, x, y):
@@ -67,7 +66,7 @@ waypoints = []
 
 
 
-
+# Odometry class that calculates current location and orientation
 class Odom():
     def __init__(self):
         self.support = Support()
@@ -81,8 +80,6 @@ class Odom():
         y = self.support.meters_to_feet(round(data.pose.pose.position.x, 2) + 1)
         x = self.support.meters_to_feet(round(-data.pose.pose.position.y, 2) + 11)
 
-        #print(str(x) + ', ' + str(y))
-
         my_location = Coord(x, y)
 
         orientation_q = data.pose.pose.orientation
@@ -90,6 +87,7 @@ class Odom():
         (roll, pitch, yaw_rad) = euler_from_quaternion (orientation_list)
         yaw = -math.degrees(yaw_rad)
 
+# Laser class that detects nearby obstacles
 class Laser():
 
     def __init__(self):
@@ -156,6 +154,7 @@ class Laser():
         else:
             self.obstacle_detected = False
 
+# Camera class filters for landmarks on the environment
 class Camera():
     def __init__(self):
         self.image_sub = rospy.Subscriber("/camera/rgb/image_raw", Image, self.image_callback)
@@ -243,6 +242,7 @@ class Camera():
         return -2
     
 
+# New plan class that calculates an optimal path using the A* algorithm
 class Plan():
     def __init__(self):
         self.support = Support()
@@ -607,9 +607,6 @@ class Navigation():
         self.velocity_pub.publish(vel_msg)
 
 
-
-
-
 def choice_callback(data):
 
     print('Received:')
@@ -620,7 +617,6 @@ def choice_callback(data):
     busy_bool.data = True
     busy_pub.publish(busy_bool)
 
-    #cv2.destroyAllWindows()
 
     print('got here 1')
 
