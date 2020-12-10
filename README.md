@@ -25,7 +25,7 @@ Or unpack the zipped project submitted into a suitable location
 ## #5 Execute the main launch file
 `roslaunch robot_control robot_control.launch`   
    
-When prompted, input the number of the choice you would like the robot to execute and press enter
+When prompted, input the number of the choice you would like the robot to execute and press enter:   
 `1`   
 `4`   
 (etc...)   
